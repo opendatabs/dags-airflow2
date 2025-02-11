@@ -30,10 +30,13 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
         image='mobilitaet_mikromobilitaet:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m mobilitaet_mikromobilitaet.etl',
+        command='python3 -m mobilitaet_mikromobilitaet.src.etl',
         container_name='mobilitaet_mikromobilitaet',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
+        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
+                Mount(source="/mnt/OGD-DataExch/StatA/BVD-MOB/Mikromobilitaet",
+                      target="/code/data-processing/mobilitaet_mikromobilitaet/data", type="bind")
+                ]
     )
