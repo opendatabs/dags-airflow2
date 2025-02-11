@@ -34,5 +34,7 @@ with DAG('mobilitaet_parkflaechen', default_args=default_args, schedule_interval
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
+        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
+                Mount(source="/mnt/OGD-DataExch/StatA/BVD-MOB/Parkplatzkataster/",
+                      target="/code/data-processing/mobilitaet_parkflaechen/data", type="bind")]
     )
