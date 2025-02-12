@@ -2,7 +2,7 @@
 # mobilitaet_mikromobilitaet_stats
 This DAG updates the following datasets:
 
-- [100414](https://data.bs.ch/explore/dataset/100414)
+- [100414](https://data.bs.ch/explore/dataset/100416)
 - [100418](https://data.bs.ch/explore/dataset/100418)
 """
 
