@@ -4,6 +4,7 @@ This DAG updates the following datasets:
 
 - [100416](https://data.bs.ch/explore/dataset/100416)
 - [100418](https://data.bs.ch/explore/dataset/100418)
+- [100422](https://data.bs.ch/explore/dataset/100422)
 """
 
 from airflow import DAG
