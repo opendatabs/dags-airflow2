@@ -35,5 +35,7 @@ with DAG('ods_catalog', default_args=default_args, schedule_interval='3 * * * *'
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
+        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
+                Mount(source="/mnt/OGD-DataExch/StatA/FST-OGD",
+                      target="/code/data-processing/ods_catalog/data", type="bind")]
     )
