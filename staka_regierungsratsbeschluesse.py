@@ -16,7 +16,7 @@ default_args = {
     'owner': 'orhan.saeedi',
     'description': 'Run the staka_regierungsratsbeschluesse docker container',
     'depend_on_past': False,
-    'start_date': datetime(2024, 3, 1),
+    'start_date': datetime(2025, 2, 26),
     'email': ["jonas.bieri@bs.ch", "orhan.saeedi@bs.ch", "rstam.aloush@bs.ch", "renato.farruggio@bs.ch"],
     'email_on_failure': True,
     'email_on_retry': False,
