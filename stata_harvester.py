@@ -16,12 +16,14 @@ default_args = {
     'retry_delay': timedelta(minutes=3)
 }
 
-with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
+with DAG('stata_harvester', default_args=default_args, catchup=False, schedule_interval="*/5 * * * *") as dag:
+    ''' TODO: Implement a FileSensor that works
     poking = FileSensor(
         task_id='poking',
         filepath='/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv/OpendataSoft_Export_Stata.csv',
         poke_interval=10
     )
+    '''
 
     upload = DockerOperator(
         task_id='upload',
@@ -52,4 +54,4 @@ with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
         mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
     )
 
-    poking >> upload >> ods_harvest
+    upload >> ods_harvest
