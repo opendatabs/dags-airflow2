@@ -44,7 +44,7 @@ with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
         image='ods-harvest:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m ods_harvest.etl gva-ftp-csv',
+        command='python3 -m ods_harvest.etl stata-ftp-csv',
         container_name='gva-geodatenshop--ods-harvest',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
