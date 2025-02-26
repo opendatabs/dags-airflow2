@@ -9,7 +9,6 @@ import time
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.providers.docker.operators.docker import DockerOperator
-from airflow.operators.python import PythonOperator
 from docker.types import Mount
 
 default_args = {
