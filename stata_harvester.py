@@ -19,7 +19,8 @@ default_args = {
 with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
     poking = FileSensor(
         task_id='poking',
-        filepath='/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv/OpendataSoft_Export_Stata.csv',
+        fs_conn_id="fs_data_exch_stata",
+        filepath='harvesters/StatA/ftp-csv/OpendataSoft_Export_Stata.csv',
         poke_interval=10
     )
 
@@ -28,7 +29,7 @@ with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
         image='stata_harvester:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m stata_harvester.etl',
+        command='uv run -m etl',
         container_name='stata_harvester',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
