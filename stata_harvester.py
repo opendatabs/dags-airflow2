@@ -39,19 +39,3 @@ with DAG('stata_harvester', default_args=default_args, catchup=False, schedule_i
                 Mount(source="/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv",
                         target="/code/data-processing/stata_harvester/data_orig", type="bind")]
     )
-
-
-    ods_harvest = DockerOperator(
-        task_id='ods-harvest',
-        image='ods-harvest:latest',
-        api_version='auto',
-        auto_remove='force',
-        command='python3 -m ods_harvest.etl stata-ftp-csv',
-        container_name='gva-geodatenshop--ods-harvest',
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
-    )
-
-    upload >> ods_harvest
