@@ -23,7 +23,7 @@ default_args = {
     'retry_delay': timedelta(minutes=15)
 }
 
-with DAG('staka_regierungsratsbeschluesse', default_args=default_args, schedule_interval='0 0 * * 2,3',
+with DAG('staka_regierungsratsbeschluesse', default_args=default_args, schedule_interval='*/5 * * * 2,3',
          catchup=False) as dag:
     dag.doc_md = __doc__
     upload = DockerOperator(
