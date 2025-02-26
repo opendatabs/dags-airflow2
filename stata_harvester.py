@@ -19,8 +19,7 @@ default_args = {
 with DAG('stata_harvester', default_args=default_args, catchup=False) as dag:
     poking = FileSensor(
         task_id='poking',
-        fs_conn_id="fs_data_exch_stata",
-        filepath='harvesters/StatA/ftp-csv/OpendataSoft_Export_Stata.csv',
+        filepath='/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv/OpendataSoft_Export_Stata.csv',
         poke_interval=10
     )
 
