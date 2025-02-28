@@ -7,8 +7,19 @@ This DAG updates the following datasets:
 
 from airflow import DAG
 from datetime import datetime, timedelta
+from airflow.models.dagrun import DagRun
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
+
+def check_manual_triggering(**context):
+    dag_run: DagRun = context.get('dag_run')
+    # Below condition will return true if DAG is triggered manually.
+    if dag_run.external_trigger:
+        raise RuntimeError(
+            'Manual DAG run disallowed since it is only meant to be triggered by the scheduler. '
+            'For further info see job `mobilitaet_mikromobilitaet_stats` in the data-processing repository.'
+        )
 
 default_args = {
     'owner': 'orhan.saeedi',
@@ -24,6 +35,12 @@ default_args = {
 
 with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_interval="*/10 * * * *", catchup=False) as dag:
     dag.doc_md = __doc__
+
+    manual_trigger_check = PythonOperator(
+        task_id="manual_trigger_check",
+        python_callable=check_manual_triggering,
+    )
+
     process_upload = DockerOperator(
         task_id='process-upload',
         image='mobilitaet_mikromobilitaet:latest',
@@ -39,3 +56,5 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
                       target="/code/data-processing/mobilitaet_mikromobilitaet/data", type="bind")
                 ]
     )
+
+    manual_trigger_check >> process_upload
