@@ -1,8 +1,5 @@
 """
 # dataspot
-This DAG updates the following datasets:
-
-- [......](https://data.bs.ch/explore/dataset/......)
 """
 from airflow import DAG
 from datetime import datetime, timedelta
@@ -28,7 +25,7 @@ with DAG('dataspot', default_args=default_args, schedule_interval="0 */2 * * *",
         image='dataspot:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m dataspot.etl',
+        command='uv run -m etl',
         container_name='dataspot',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
