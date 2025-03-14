@@ -28,7 +28,7 @@ with DAG('meteoblue_rosental', default_args=default_args, schedule_interval="45 
         image='meteoblue_rosental:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m meteoblue_rosental.etl',
+        command='uv run -m etl',
         container_name='meteoblue_rosental',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
