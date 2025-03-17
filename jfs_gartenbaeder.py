@@ -28,7 +28,7 @@ with DAG('jfs_gartenbaeder', default_args=default_args, schedule_interval="*/15 
         image='jfs_gartenbaeder:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m jfs_gartenbaeder.etl',
+        command='uv run -m etl',
         container_name='jfs_gartenbaeder',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
