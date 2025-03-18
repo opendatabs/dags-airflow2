@@ -54,7 +54,7 @@ with DAG('mobilitaet_verkehrszaehldaten', default_args=default_args, schedule_in
         tty=True,
         mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")],
     )
-
+    ''' Comment out until necessary
     rsync = DockerOperator(
         task_id='rsync',
         image='rsync:latest',
@@ -68,6 +68,6 @@ with DAG('mobilitaet_verkehrszaehldaten', default_args=default_args, schedule_in
         mounts=[Mount(source="/home/syncuser/.ssh/id_rsa", target="/root/.ssh/id_rsa", type="bind"),
                 Mount(source="/data/dev/workspace", target="/code", type="bind")]
     )
+    '''
 
     upload >> ods_publish
-    upload >> rsync
