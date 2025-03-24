@@ -29,7 +29,7 @@ with DAG('mobilitaet_dtv', default_args=default_args, schedule_interval="0 3 * *
         image='mobilitaet_dtv:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m mobilitaet_dtv.etl',
+        command='uv run -m etl',
         container_name='mobilitaet_dtv--upload',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
