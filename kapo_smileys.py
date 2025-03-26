@@ -30,7 +30,7 @@ with DAG('kapo_smileys', default_args=default_args, schedule_interval="15 3 * * 
         image='kapo_smileys:latest',
         api_version='auto',
         auto_remove='force',
-        command='python3 -m kapo_smileys.etl',
+        command='uv run -m src.etl',
         container_name='kapo_smileys--upload',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
