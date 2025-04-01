@@ -28,16 +28,16 @@ with DAG('mobilitaet_mikromobilitaet_stats', default_args=default_args, schedule
     dag.doc_md = __doc__
     process_upload = DockerOperator(
         task_id='process-upload',
-        image='mobilitaet_mikromobilitaet_stats:latest',
+        image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet_stats:latest',
         api_version='auto',
         auto_remove='force',
-        command='uv run -m src.etl_stats',
+        command='uv run -m etl',
         container_name='mobilitaet_mikromobilitaet_stats',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
                 Mount(source="/mnt/OGD-DataExch/StatA/BVD-MOB/Mikromobilitaet",
-                      target="/code/data-processing/mobilitaet_mikromobilitaet/data", type="bind")
+                      target="/code/data-processing/mobilitaet_mikromobilitaet_stats/data", type="bind")
                 ]
     )
