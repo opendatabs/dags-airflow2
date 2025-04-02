@@ -11,6 +11,10 @@ from airflow.models.dagrun import DagRun
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
+from airflow.models import Variable
+
+# This is set in the Airflow UI under Admin -> Variables
+https_proxy = Variable.get("https_proxy")
 
 def check_manual_triggering(**context):
     dag_run: DagRun = context.get('dag_run')
@@ -46,6 +50,7 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
         image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet:latest',
         api_version='auto',
         auto_remove='force',
+        environment={'https_proxy': https_proxy},
         command='uv run -m src.etl',
         container_name='mobilitaet_mikromobilitaet',
         docker_url="unix://var/run/docker.sock",

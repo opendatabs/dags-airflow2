@@ -11,6 +11,10 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
+from airflow.models import Variable
+
+# This is set in the Airflow UI under Admin -> Variables
+https_proxy = Variable.get("https_proxy")
 
 default_args = {
     'owner': 'orhan.saeedi',
@@ -31,6 +35,7 @@ with DAG('mobilitaet_mikromobilitaet_stats', default_args=default_args, schedule
         image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet_stats:latest',
         api_version='auto',
         auto_remove='force',
+        environment={'https_proxy': https_proxy},
         command='uv run -m etl',
         container_name='mobilitaet_mikromobilitaet_stats',
         docker_url="unix://var/run/docker.sock",

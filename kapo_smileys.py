@@ -10,6 +10,10 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
+from airflow.models import Variable
+
+# This is set in the Airflow UI under Admin -> Variables
+https_proxy = Variable.get("https_proxy")
 
 default_args = {
     'owner': 'jonas.bieri',
@@ -30,6 +34,7 @@ with DAG('kapo_smileys', default_args=default_args, schedule_interval="15 3 * * 
         image='ghcr.io/opendatabs/data-processing/kapo_smileys:latest',
         api_version='auto',
         auto_remove='force',
+        environment={'https_proxy': https_proxy},
         command='uv run -m src.etl',
         container_name='kapo_smileys--upload',
         docker_url="unix://var/run/docker.sock",
