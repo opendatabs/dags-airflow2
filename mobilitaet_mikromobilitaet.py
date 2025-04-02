@@ -50,7 +50,9 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
         image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet:latest',
         api_version='auto',
         auto_remove='force',
-        environment={'https_proxy': https_proxy},
+        environment={
+            'https_proxy': https_proxy,
+            'no_proxy': 'https://wfs.geo.bs.ch},
         command='uv run -m src.etl',
         container_name='mobilitaet_mikromobilitaet',
         docker_url="unix://var/run/docker.sock",
