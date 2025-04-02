@@ -52,7 +52,7 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
         auto_remove='force',
         environment={
             'https_proxy': https_proxy,
-            'no_proxy': 'https://wfs.geo.bs.ch},
+            'no_proxy': 'https://wfs.geo.bs.ch'},
         command='uv run -m src.etl',
         container_name='mobilitaet_mikromobilitaet',
         docker_url="unix://var/run/docker.sock",
