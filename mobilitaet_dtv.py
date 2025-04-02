@@ -26,7 +26,7 @@ with DAG('mobilitaet_dtv', default_args=default_args, schedule_interval="0 3 * *
     dag.doc_md = __doc__
     upload_bag_datasets = DockerOperator(
         task_id='upload',
-        image='mobilitaet_dtv:latest',
+        image='ghcr.io/opendatabs/data-processing/mobilitaet_dtv:latest',
         api_version='auto',
         auto_remove='force',
         command='uv run -m etl',

@@ -27,7 +27,7 @@ with DAG('stata_harvester', default_args=default_args, catchup=False, schedule_i
 
     upload = DockerOperator(
         task_id='upload',
-        image='stata_harvester:latest',
+        image='ghcr.io/opendatabs/data-processing/stata_harvester:latest',
         api_version='auto',
         auto_remove='force',
         command='uv run -m etl',

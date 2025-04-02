@@ -27,7 +27,7 @@ with DAG('kapo_smileys', default_args=default_args, schedule_interval="15 3 * * 
     dag.doc_md = __doc__
     upload = DockerOperator(
         task_id='upload',
-        image='kapo_smileys:latest',
+        image='ghcr.io/opendatabs/data-processing/kapo_smileys:latest',
         api_version='auto',
         auto_remove='force',
         command='uv run -m src.etl',

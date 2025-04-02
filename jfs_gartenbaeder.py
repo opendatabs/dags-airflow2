@@ -25,7 +25,7 @@ with DAG('jfs_gartenbaeder', default_args=default_args, schedule_interval="*/15 
     dag.doc_md = __doc__
     upload = DockerOperator(
         task_id='upload',
-        image='jfs_gartenbaeder:latest',
+        image='ghcr.io/opendatabs/data-processing/jfs_gartenbaeder:latest',
         api_version='auto',
         auto_remove='force',
         command='uv run -m etl',
