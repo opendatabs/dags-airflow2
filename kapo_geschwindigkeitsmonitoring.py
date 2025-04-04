@@ -19,7 +19,7 @@ from airflow.models import Variable
 https_proxy = Variable.get("https_proxy")
 http_proxy = Variable.get("http_proxy")
 PROXIES = Variable.get("PROXIES")
-EMIAL_RECEIVERS = Variable.get("EMIAL_RECEIVERS")
+EMAIL_RECEIVERS = Variable.get("EMAIL_RECEIVERS")
 EMAIL_SERVER = Variable.get("EMAIL_SERVER")
 EMAIL = Variable.get("EMAIL")
 FTP_SERVER = Variable.get("FTP_SERVER")
@@ -51,7 +51,7 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         environment={'https_proxy': https_proxy,
                      'http_proxy': http_proxy,
                      'PROXIES': PROXIES,
-                     'EMIAL_RECEIVERS': EMIAL_RECEIVERS,
+                     'EMAIL_RECEIVERS': EMAIL_RECEIVERS,
                      'EMAIL_SERVER': EMAIL_SERVER,
                      'EMAIL': EMAIL,
                      'FTP_SERVER': FTP_SERVER,
