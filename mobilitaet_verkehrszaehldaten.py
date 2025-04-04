@@ -30,6 +30,7 @@ with DAG('mobilitaet_verkehrszaehldaten', default_args=default_args, schedule_in
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/mobilitaet_verkehrszaehldaten:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         command='uv run -m src.etl',

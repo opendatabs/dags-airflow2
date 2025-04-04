@@ -30,6 +30,7 @@ with DAG('meteoblue_rosental', default_args=default_args, schedule_interval="45 
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/meteoblue_rosental:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},

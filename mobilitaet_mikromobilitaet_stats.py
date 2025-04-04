@@ -33,6 +33,7 @@ with DAG('mobilitaet_mikromobilitaet_stats', default_args=default_args, schedule
     process_upload = DockerOperator(
         task_id='process-upload',
         image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet_stats:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},

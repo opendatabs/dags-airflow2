@@ -32,6 +32,7 @@ with DAG('kapo_smileys', default_args=default_args, schedule_interval="15 3 * * 
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/kapo_smileys:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},

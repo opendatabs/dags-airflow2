@@ -32,6 +32,7 @@ with DAG('stata_harvester', default_args=default_args, catchup=False, schedule_i
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/stata_harvester:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},

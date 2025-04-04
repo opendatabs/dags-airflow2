@@ -45,6 +45,7 @@ with DAG('mobilitaet_mikromobilitaet', default_args=default_args, schedule_inter
     process_upload = DockerOperator(
         task_id='process-upload',
         image='ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         command='uv run -m src.etl',

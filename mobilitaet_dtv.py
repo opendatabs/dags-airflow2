@@ -31,6 +31,7 @@ with DAG('mobilitaet_dtv', default_args=default_args, schedule_interval="0 3 * *
     upload_bag_datasets = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/mobilitaet_dtv:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},
