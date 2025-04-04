@@ -36,6 +36,7 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/data-processing/kapo_geschwindigkeitsmonitoring:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
         environment={'https_proxy': https_proxy},
