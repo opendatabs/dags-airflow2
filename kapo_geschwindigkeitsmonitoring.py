@@ -44,9 +44,12 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
+        mounts=[Mount(source="/data/dev/workspace/data-processing/kapo_geschwindigkeitsmonitoring/data", 
+                      target="/code/data", type="bind"),
                 Mount(source="/mnt/OGD-DataExch/KaPo/VP-Geschwindigkeitsmonitoring",
-                      target="/code/data-processing/kapo_geschwindigkeitsmonitoring/data_orig", type="bind")]
+                      target="/code/data_orig", type="bind"),
+                Mount(source="/data/dev/workspace/data-processing/common/change_tracking", 
+                      target="/code/common/change_tracking", type="bind")]
     )
 
     rsync = DockerOperator(
