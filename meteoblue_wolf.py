@@ -26,11 +26,11 @@ with DAG('meteoblue_wolf', default_args=default_args, schedule_interval="10 * * 
     dag.doc_md = __doc__
     process_upload = DockerOperator(
         task_id='process-upload',
-        image='meteoblue-wolf:latest',
+        image='meteoblue_wolf:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m meteoblue_wolf.etl',
-        container_name='meteoblue-wolf',
+        container_name='meteoblue_wolf',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -39,11 +39,11 @@ with DAG('meteoblue_wolf', default_args=default_args, schedule_interval="10 * * 
 
     ods_publish = DockerOperator(
         task_id='ods-publish',
-        image='ods-publish:latest',
+        image='ods_publish:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_publish.etl_id 100009,100082',
-        container_name='meteoblue-wolf--ods-publish',
+        container_name='meteoblue-wolf--ods_publish',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

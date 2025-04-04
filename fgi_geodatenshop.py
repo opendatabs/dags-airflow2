@@ -42,11 +42,11 @@ with DAG('fgi_geodatenshop', default_args=default_args, schedule_interval='0 */2
 
     ods_harvest = DockerOperator(
         task_id='ods-harvest',
-        image='ods-harvest:latest',
+        image='ods_harvest:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_harvest.etl gva-gpkg-ftp-csv',
-        container_name='fgi_geodatenshop--ods-harvest',
+        container_name='fgi_geodatenshop--ods_harvest',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

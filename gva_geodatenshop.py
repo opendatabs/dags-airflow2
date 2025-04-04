@@ -18,11 +18,11 @@ default_args = {
 with DAG('gva_geodatenshop', default_args=default_args, schedule_interval="0 5 * * *", catchup=False) as dag:
     process_upload = DockerOperator(
         task_id='process-upload',
-        image='gva-geodatenshop:latest',
+        image='gva_geodatenshop:latest',
         api_version='auto',
         auto_remove='force',
         command='/bin/bash /code/data-processing/gva_geodatenshop/etl.sh ',
-        container_name='gva-geodatenshop',
+        container_name='gva_geodatenshop',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -34,11 +34,11 @@ with DAG('gva_geodatenshop', default_args=default_args, schedule_interval="0 5 *
 
     ods_harvest = DockerOperator(
         task_id='ods-harvest',
-        image='ods-harvest:latest',
+        image='ods_harvest:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_harvest.etl gva-ftp-csv',
-        container_name='gva-geodatenshop--ods-harvest',
+        container_name='gva-geodatenshop--ods_harvest',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

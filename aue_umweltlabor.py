@@ -28,11 +28,11 @@ with DAG('aue_umweltlabor', default_args=default_args, schedule_interval="0 6 * 
     dag.doc_md = __doc__
     process_upload = DockerOperator(
         task_id='process-upload',
-        image='aue-umweltlabor:latest',
+        image='aue_umweltlabor:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m aue_umweltlabor.etl',
-        container_name='aue-umweltlabor',
+        container_name='aue_umweltlabor',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -43,11 +43,11 @@ with DAG('aue_umweltlabor', default_args=default_args, schedule_interval="0 6 * 
 
     ods_publish = DockerOperator(
         task_id='ods-publish',
-        image='ods-publish:latest',
+        image='ods_publish:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_publish.etl_id 100066,100067,100068',
-        container_name='aue-umweltlabor--ods-publish',
+        container_name='aue_umweltlabor--ods_publish',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

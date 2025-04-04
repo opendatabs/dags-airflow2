@@ -40,11 +40,11 @@ with DAG('euroairport', default_args=default_args, schedule_interval="*/15 5-8 *
 
     ods_publish = DockerOperator(
         task_id='ods-publish',
-        image='ods-publish:latest',
+        image='ods_publish:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_publish.etl_id 100078',
-        container_name='euroairport--ods-publish',
+        container_name='euroairport--ods_publish',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

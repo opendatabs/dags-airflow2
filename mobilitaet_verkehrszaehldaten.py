@@ -44,11 +44,11 @@ with DAG('mobilitaet_verkehrszaehldaten', default_args=default_args, schedule_in
 
     ods_publish = DockerOperator(
         task_id='ods-publish',
-        image='ods-publish:latest',
+        image='ods_publish:latest',
         api_version='auto',
         auto_remove='force',
         command='python3 -m ods_publish.etl_id 100006,100013,100356',
-        container_name='mobilitaet_verkehrszaehldaten--ods-publish',
+        container_name='mobilitaet_verkehrszaehldaten--ods_publish',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,

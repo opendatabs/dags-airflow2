@@ -38,11 +38,11 @@ with DAG('covid19_dashboard', default_args=default_args, schedule_interval="0 * 
 
     # ods_publish = DockerOperator(
     #         task_id='ods-publish',
-    #         image='ods-publish:latest',
+    #         image='ods_publish:latest',
     #         api_version='auto',
     #         auto_remove=True,
     #         command='python3 -m ods_publish.etl_id 100085',
-    #         container_name='covid19dashboard--ods-publish',
+    #         container_name='covid19dashboard--ods_publish',
     #         docker_url="unix://var/run/docker.sock",
     #         network_mode="bridge",
     #         tty=True,
