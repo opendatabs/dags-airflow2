@@ -17,6 +17,15 @@ from airflow.models import Variable
 
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
+http_proxy = Variable.get("http_proxy")
+PROXIES = Variable.get("PROXIES")
+EMIAL_RECEIVERS = Variable.get("EMIAL_RECEIVERS")
+EMAIL_SERVER = Variable.get("EMAIL_SERVER")
+EMAIL = Variable.get("EMAIL")
+FTP_SERVER = Variable.get("FTP_SERVER")
+FTP_USER = Variable.get("FTP_USER_OGD")
+FTP_PASS = Variable.get("FTP_PASS_OGD")
+
 
 default_args = {
     'owner': 'jonas.bieri',
@@ -39,7 +48,15 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         force_pull=True,
         api_version='auto',
         auto_remove='force',
-        environment={'https_proxy': https_proxy},
+        environment={'https_proxy': https_proxy,
+                     'http_proxy': http_proxy,
+                     'PROXIES': PROXIES,
+                     'EMIAL_RECEIVERS': EMIAL_RECEIVERS,
+                     'EMAIL_SERVER': EMAIL_SERVER,
+                     'EMAIL': EMAIL,
+                     'FTP_SERVER': FTP_SERVER,
+                     'FTP_USER': FTP_USER,
+                     'FTP_PASS': FTP_PASS},
         command='uv run -m src.etl',
         container_name='kapo_geschwindigkeitsmonitoring',
         docker_url="unix://var/run/docker.sock",
