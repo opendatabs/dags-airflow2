@@ -20,7 +20,7 @@ DB_PWD = Variable.get("DB_PWD")
 
 default_args = {
     'owner': 'orhan.saeedi',
-    'description': 'Run the stata_konoer docker container',
+    'description': 'Run the stata_tourismusdashboard docker container',
     'depend_on_past': False,
     'start_date': datetime(2025, 4, 11),
     'email': ["jonas.bieri@bs.ch", "orhan.saeedi@bs.ch", "rstam.aloush@bs.ch", "renato.farruggio@bs.ch"],
@@ -29,7 +29,7 @@ default_args = {
     'retries': 0,
     'retry_delay': timedelta(minutes=15)
 }
-with DAG('stata_konoer', default_args=default_args, schedule_interval="0 10 * * *", catchup=False) as dag:
+with DAG('stata_tourismusdashboard', default_args=default_args, schedule_interval="0 10 * * *", catchup=False) as dag:
     upload = DockerOperator(
         task_id='upload',
         image='ghcr.io/opendatabs/tourismusdashboard:latest',
