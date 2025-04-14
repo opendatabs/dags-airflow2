@@ -16,6 +16,7 @@ from docker.types import Mount
 from airflow.models import Variable
 
 # This is set in the Airflow UI under Admin -> Variables
+# For common
 https_proxy = Variable.get("https_proxy")
 http_proxy = Variable.get("http_proxy")
 PROXIES = Variable.get("PROXIES")
@@ -25,6 +26,11 @@ EMAIL = Variable.get("EMAIL")
 FTP_SERVER = Variable.get("FTP_SERVER")
 FTP_USER = Variable.get("FTP_USER_OGD")
 FTP_PASS = Variable.get("FTP_PASS_OGD")
+ODS_API_KEY = Variable.get("ODS_API_KEY")
+# For etl job
+PG_CONNECTION = Variable.get("KAPO_GM_PG_CONNECTION")
+DETAIL_DATA_Q_DRIVE = Variable.get("DETAIL_DATA_Q_DRIVE")
+DETAIL_DATA_Q_BASE_PATH = Variable.get("DETAIL_DATA_Q_BASE_PATH")
 
 
 default_args = {
@@ -56,7 +62,11 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
                      'EMAIL': EMAIL,
                      'FTP_SERVER': FTP_SERVER,
                      'FTP_USER': FTP_USER,
-                     'FTP_PASS': FTP_PASS},
+                     'FTP_PASS': FTP_PASS,
+                     'ODS_API_KEY': ODS_API_KEY,
+                     'PG_CONNECTION': PG_CONNECTION,
+                     'DETAIL_DATA_Q_DRIVE': DETAIL_DATA_Q_DRIVE,
+                     'DETAIL_DATA_Q_BASE_PATH': DETAIL_DATA_Q_BASE_PATH},
         command='uv run -m src.etl',
         container_name='kapo_geschwindigkeitsmonitoring',
         docker_url="unix://var/run/docker.sock",
