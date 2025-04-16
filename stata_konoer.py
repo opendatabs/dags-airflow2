@@ -28,7 +28,8 @@ with DAG('stata_konoer', default_args=default_args, schedule_interval="0 10 * * 
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
+        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind"),
+               Mount(source="/mnt/OGD-DataExch/StatA/KoNöR", target="/code/data-processing/stata_konoer/data", type="bind")]
     )
 
     rsync_test = DockerOperator(
