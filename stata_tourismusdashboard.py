@@ -10,13 +10,7 @@ from airflow.models import Variable
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
 http_proxy = Variable.get("http_proxy")
-DB_DRIVER = Variable.get("DB_DRIVER")
-DB_SERVER = Variable.get("DB_SERVER")
-DB_NAME = Variable.get("DB_NAME_TOURISMUSDASHBOARD")
-DB_VIEW = Variable.get("DB_VIEW_TOURISMUSDASHBOARD")
-DB_UID = Variable.get("DB_UID")
-DB_PWD = Variable.get("DB_PWD")
-
+DB_CONNECTION_STRING_TOURISMUS = Variable.get("DB_CONNECTION_STRING_TOURISMUS")
 
 default_args = {
     'owner': 'orhan.saeedi',
@@ -40,12 +34,7 @@ with DAG('stata_tourismusdashboard', default_args=default_args, schedule_interva
         environment={
             'https_proxy': https_proxy,
             'http_proxy': http_proxy,
-            'DB_DRIVER': DB_DRIVER,
-            'DB_SERVER': DB_SERVER,
-            'DB_NAME': DB_NAME,
-            'DB_VIEW': DB_VIEW,
-            'DB_UID': DB_UID,
-            'DB_PWD': DB_PWD
+            'DB_CONNECTION_STRING_TOURISMUS': DB_CONNECTION_STRING_TOURISMUS,
         },
         container_name='stata_tourismusdashboard--transform',
         docker_url="unix://var/run/docker.sock",
