@@ -8,6 +8,24 @@ from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
+from airflow.models import Variable
+
+# This is set in the Airflow UI under Admin -> Variables
+PATH_TO_CODE = Variable.get("PATH_TO_CODE")
+# For common
+https_proxy = Variable.get("https_proxy")
+http_proxy = Variable.get("http_proxy")
+EMAIL_RECEIVERS = Variable.get("EMAIL_RECEIVERS")
+EMAIL_SERVER = Variable.get("EMAIL_SERVER")
+EMAIL = Variable.get("EMAIL")
+FTP_SERVER = Variable.get("FTP_SERVER")
+FTP_USER = Variable.get("FTP_USER")
+FTP_PASS = Variable.get("FTP_PASS")
+ODS_API_KEY = Variable.get("ODS_API_KEY")
+# For etl job
+FTP_USER_04 = Variable.get("FTP_USER_04")
+FTP_PASS_04 = Variable.get("FTP_PASS_04")
+ODS_PUSH_URL_100046 = Variable.get("ODS_PUSH_URL_100046")
 
 default_args = {
     'owner': 'jonas.bieri',
@@ -25,13 +43,26 @@ with DAG('aue_schall', default_args=default_args, schedule_interval="*/15 * * * 
     dag.doc_md = __doc__
     upload = DockerOperator(
         task_id='upload',
-        image='aue_schall:latest',
+        image='ghcr.io/opendatabs/data-processing/aue_schall:latest',
+        force_pull=True,
         api_version='auto',
         auto_remove='force',
-        command='python3 -m aue_schall.etl',
+        command='uv run -m etl',
+        environment={
+            'https_proxy': https_proxy,
+            'http_proxy': http_proxy,
+            'EMAIL_RECEIVERS': EMAIL_RECEIVERS,
+            'EMAIL_SERVER': EMAIL_SERVER,
+            'EMAIL': EMAIL,
+            'FTP_SERVER': FTP_SERVER,
+            'FTP_USER': FTP_USER_04,
+            'FTP_PASS': FTP_PASS_04,
+            'ODS_API_KEY': ODS_API_KEY,
+            'ODS_PUSH_URL_100046': ODS_PUSH_URL_100046
+        },
         container_name='aue_schall',
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
-    )
+        mounts=[Mount(source=f"{PATH_TO_CODE}/data-processing/aue_schall/data",
+                      target="/code/data", type="bind")])
