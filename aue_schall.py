@@ -25,7 +25,7 @@ ODS_API_KEY = Variable.get("ODS_API_KEY")
 # For etl job
 FTP_USER_04 = Variable.get("FTP_USER_04")
 FTP_PASS_04 = Variable.get("FTP_PASS_04")
-ODS_PUSH_URL_100046 = Variable.get("ODS_PUSH_URL_100046")
+ODS_PUSH_URL_100087 = Variable.get("ODS_PUSH_URL_100087")
 
 default_args = {
     'owner': 'jonas.bieri',
@@ -60,7 +60,7 @@ with DAG('aue_schall', default_args=default_args, schedule_interval="*/15 * * * 
             'ODS_API_KEY': ODS_API_KEY,
             'FTP_USER_04': FTP_USER_04,
             'FTP_PASS_04': FTP_PASS_04,
-            'ODS_PUSH_URL_100046': ODS_PUSH_URL_100046
+            'ODS_PUSH_URL_100087': ODS_PUSH_URL_100087
         },
         container_name='aue_schall',
         docker_url="unix://var/run/docker.sock",
