@@ -55,9 +55,11 @@ with DAG('aue_schall', default_args=default_args, schedule_interval="*/15 * * * 
             'EMAIL_SERVER': EMAIL_SERVER,
             'EMAIL': EMAIL,
             'FTP_SERVER': FTP_SERVER,
-            'FTP_USER': FTP_USER_04,
-            'FTP_PASS': FTP_PASS_04,
+            'FTP_USER': FTP_USER,
+            'FTP_PASS': FTP_PASS,
             'ODS_API_KEY': ODS_API_KEY,
+            'FTP_USER_04': FTP_USER_04,
+            'FTP_PASS_04': FTP_PASS_04,
             'ODS_PUSH_URL_100046': ODS_PUSH_URL_100046
         },
         container_name='aue_schall',
