@@ -50,7 +50,7 @@ with DAG('aue_grundwasser', default_args=default_args, schedule_interval="25 5 *
         force_pull=True,
         api_version='auto',
         auto_remove='force',
-        command='python3 -m aue_grundwasser.etl',
+        command='uv run -m src.etl',
         environment={'https_proxy': https_proxy,
                     'http_proxy': http_proxy,
                     'EMAIL_RECEIVERS': EMAIL_RECEIVERS,
