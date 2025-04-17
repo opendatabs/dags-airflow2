@@ -16,16 +16,16 @@ from docker.types import Mount
 from airflow.models import Variable
 
 # This is set in the Airflow UI under Admin -> Variables
+PATH_TO_CODE = Variable.get("PATH_TO_CODE")
 # For common
 https_proxy = Variable.get("https_proxy")
 http_proxy = Variable.get("http_proxy")
-PROXIES = Variable.get("PROXIES")
 EMAIL_RECEIVERS = Variable.get("EMAIL_RECEIVERS")
 EMAIL_SERVER = Variable.get("EMAIL_SERVER")
 EMAIL = Variable.get("EMAIL")
 FTP_SERVER = Variable.get("FTP_SERVER")
-FTP_USER = Variable.get("FTP_USER_OGD")
-FTP_PASS = Variable.get("FTP_PASS_OGD")
+FTP_USER = Variable.get("FTP_USER")
+FTP_PASS = Variable.get("FTP_PASS")
 ODS_API_KEY = Variable.get("ODS_API_KEY")
 # For etl job
 PG_CONNECTION = Variable.get("KAPO_GM_PG_CONNECTION")
@@ -56,7 +56,6 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         auto_remove='force',
         environment={'https_proxy': https_proxy,
                      'http_proxy': http_proxy,
-                     'PROXIES': PROXIES,
                      'EMAIL_RECEIVERS': EMAIL_RECEIVERS,
                      'EMAIL_SERVER': EMAIL_SERVER,
                      'EMAIL': EMAIL,
@@ -72,11 +71,11 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing/kapo_geschwindigkeitsmonitoring/data", 
+        mounts=[Mount(source=f"{PATH_TO_CODE}/data-processing/kapo_geschwindigkeitsmonitoring/data", 
                       target="/code/data", type="bind"),
                 Mount(source="/mnt/OGD-DataExch/KaPo/VP-Geschwindigkeitsmonitoring",
                       target="/code/data_orig", type="bind"),
-                Mount(source="/data/dev/workspace/data-processing/kapo_geschwindigkeitsmonitoring/change_tracking", 
+                Mount(source=f"{PATH_TO_CODE}/data-processing/kapo_geschwindigkeitsmonitoring/change_tracking", 
                       target="/code/change_tracking", type="bind")]
     )
 
@@ -91,7 +90,7 @@ with DAG('kapo_geschwindigkeitsmonitoring', default_args=default_args, schedule_
         network_mode="bridge",
         tty=True,
         mounts=[Mount(source="/home/syncuser/.ssh/id_rsa", target="/root/.ssh/id_rsa", type="bind"),
-                Mount(source="/data/dev/workspace", target="/code", type="bind")]
+                Mount(source=PATH_TO_CODE, target="/code", type="bind")]
     )
 
     upload >> rsync
