@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from docker.types import Mount
 from airflow.models import Variable
 
+PATH_TO_CODE = Variable.get("PATH_TO_CODE")
 AIRFLOW__DATABASE__SQL_ALCHEMY_CONN = Variable.get("AIRFLOW__DATABASE__SQL_ALCHEMY_CONN")
 
 # Define default arguments for the DAG
@@ -47,7 +48,7 @@ with DAG(
             'AIRFLOW__DATABASE__SQL_ALCHEMY_CONN': AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
         },
         mounts=[
-            Mount(source="/data/dev/workspace/dags-airflow2", target="/opt/airflow/dags", type="bind"),
+            Mount(source=f"{PATH_TO_CODE}/dags-airflow2", target="/opt/airflow/dags", type="bind"),
             Mount(source="/data/airflow/logs", target="/opt/airflow/logs", type="bind"),
             Mount(source="/data/airflow/plugins", target="/opt/airflow/plugins", type="bind")
         ]
