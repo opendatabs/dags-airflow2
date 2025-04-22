@@ -42,9 +42,9 @@ with DAG(
         command="uv run -m src.etl_https",
         private_environment={
             **COMMON_ENV_VARS,
-            "HTTPS_URL": Variable.get("HTTPS_URL_01"),
-            "HTTPS_USER": Variable.get("HTTPS_USER_01"),
-            "HTTPS_PASS": Variable.get("HTTPS_PASS_01"),
+            "HTTPS_URL_01": Variable.get("HTTPS_URL_01"),
+            "HTTPS_USER_01": Variable.get("HTTPS_USER_01"),
+            "HTTPS_PASS_01": Variable.get("HTTPS_PASS_01"),
             "RHEIN_FILES": Variable.get("RHEIN_FILES"),
             "BIRS_FILES": Variable.get("BIRS_FILES"),
             "WIESE_FILES": Variable.get("WIESE_FILES"),
