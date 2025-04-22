@@ -31,8 +31,8 @@ default_args = {
 
 with DAG(
     "aue_grundwasser",
+    description="Run the aue_grundwasser docker image",
     default_args=default_args,
-    description="Run the aue_grundwasser docker container",
     schedule_interval="25 5 * * *",
     catchup=False,
 ) as dag:
