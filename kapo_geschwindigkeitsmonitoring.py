@@ -20,7 +20,6 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "jonas.bieri",
-    "description": "Run the kapo_geschwindigkeitsmonitoring docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 2, 2),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -32,6 +31,7 @@ default_args = {
 
 with DAG(
     "kapo_geschwindigkeitsmonitoring",
+    description="Run the kapo_geschwindigkeitsmonitoring docker container",
     default_args=default_args,
     schedule_interval="0 2 * * *",
     catchup=False,
