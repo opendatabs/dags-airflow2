@@ -40,7 +40,7 @@ with DAG(
         image="apache/airflow:2.7.2",
         container_name="airflow_cleanup_container",
         api_version="auto",
-        auto_remove=True,
+        auto_remove="force",
         command="bash -c \"airflow db clean --yes --clean-before-timestamp $(date -d '90 days ago' +%Y-%m-%d)\"",
         docker_url="unix://var/run/docker.sock",
         network_mode="airflow_default",
