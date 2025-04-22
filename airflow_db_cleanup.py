@@ -55,11 +55,7 @@ with DAG(
                 target="/opt/airflow/dags",
                 type="bind",
             ),
-            Mount(
-                source="/data/airflow/logs",
-                target="/opt/airflow/logs",
-                type="bind"
-            ),
+            Mount(source="/data/airflow/logs", target="/opt/airflow/logs", type="bind"),
             Mount(
                 source="/data/airflow/plugins",
                 target="/opt/airflow/plugins",
