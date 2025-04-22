@@ -44,8 +44,8 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="uv run -m src.etl",
-        environment=COMMON_ENV_VARS
-        | {
+        environment={
+            **COMMON_ENV_VARS,
             "FTP_USER_02": Variable.get("FTP_USER_02"),
             "FTP_PASS_02": Variable.get("FTP_PASS_02"),
         },
