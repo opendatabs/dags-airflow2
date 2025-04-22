@@ -45,6 +45,7 @@ with DAG(
             **COMMON_ENV_VARS,
             "URL_LEISTUNGEN": Variable.get("URL_LEISTUNGEN"),
             "URL_GEBUEHREN": Variable.get("URL_GEBUEHREN"),
+            "HOST_KLV": Variable.get("HOST_KLV"),
             "API_USER_KLV": Variable.get("API_USER_KLV"),
             "API_PASS_KLV": Variable.get("API_PASS_KLV"),
         },
