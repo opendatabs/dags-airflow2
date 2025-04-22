@@ -29,7 +29,7 @@ default_args = {
 
 with DAG(
     "aue_rues",
-    description="Run the aue_rues docker image",
+    description="Run the aue_rues docker container",
     default_args=default_args,
     schedule_interval="*/10 * * * *",
     catchup=False,

@@ -28,7 +28,7 @@ default_args = {
 
 with DAG(
     "aue_schall",
-    description="Run the aue_schall docker image",
+    description="Run the aue_schall docker container",
     default_args=default_args,
     schedule_interval="*/15 * * * *",
     catchup=False,

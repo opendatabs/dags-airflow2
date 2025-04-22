@@ -19,7 +19,6 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "jonas.bieri",
-    "description": "Run the aue-umweltlabor docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 1, 19),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -31,6 +30,7 @@ default_args = {
 
 with DAG(
     "aue_umweltlabor",
+    description="Run the aue-umweltlabor docker container",
     default_args=default_args,
     schedule_interval="0 6 * * *",
     catchup=False,
