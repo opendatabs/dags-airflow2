@@ -46,7 +46,6 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "PG_CONNECTION": Variable.get("PG_CONNECTION"),
-            "DETAIL_DATA_Q_DRIVE": Variable.get("DETAIL_DATA_Q_DRIVE"),
             "DETAIL_DATA_Q_BASE_PATH": Variable.get("DETAIL_DATA_Q_BASE_PATH"),
         },
         command="uv run -m src.etl",
