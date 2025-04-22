@@ -44,7 +44,7 @@ with DAG(
         command="bash -c \"airflow db clean --yes --clean-before-timestamp $(date -d '90 days ago' +%Y-%m-%d)\"",
         docker_url="unix://var/run/docker.sock",
         network_mode="airflow_default",
-        environment={
+        private_environment={
             "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN": Variable.get(
                 "AIRFLOW__DATABASE__SQL_ALCHEMY_CONN"
             )
