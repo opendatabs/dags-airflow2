@@ -39,7 +39,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="uv run -m etl",
+        command="uv run -m src.etl",
         private_environment=COMMON_ENV_VARS,
         container_name="bvb_fahrgastzahlen",
         docker_url="unix://var/run/docker.sock",
