@@ -40,7 +40,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="uv run -m make_dataset",
+        command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
             "ODS_PUSH_URL_100167": Variable.get("ODS_PUSH_URL_100167"),
