@@ -38,7 +38,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         private_environment=COMMON_ENV_VARS,
-        command="uv run -m src.etl",
+        command="uv run -m etl",
         container_name="dataspot",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
