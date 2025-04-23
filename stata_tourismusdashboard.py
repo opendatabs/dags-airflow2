@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.exceptions import AirflowSkipException
 from airflow.models import Variable
-from airflow.operators.python import PythonOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 from pytz import timezone
