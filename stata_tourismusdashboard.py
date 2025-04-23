@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.operators.python import ShortCircuitOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.trigger_rule import TriggerRule
 from docker.types import Mount
@@ -22,7 +21,7 @@ default_args = {
     "depend_on_past": False,
     "start_date": datetime(2025, 4, 11),
     "email": Variable.get("EMAIL_RECEIVERS"),
-    "email_on_failure": True,
+    "email_on_failure": False,
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=15),
@@ -58,15 +57,6 @@ with DAG(
         do_xcom_push=True,
     )
 
-    embargo_gate_100413 = ShortCircuitOperator(
-        task_id="embargo_gate_100413",
-        python_callable=lambda **kwargs: kwargs["ti"].xcom_pull(
-            task_ids="embargo_docker_100413"
-        )
-        == 0,
-        provide_context=True,
-    )
-
     embargo_docker_100414 = DockerOperator(
         task_id="embargo_docker_100414",
         image="python:3.12-slim",
@@ -88,15 +78,6 @@ with DAG(
         network_mode="bridge",
         tty=True,
         do_xcom_push=True,
-    )
-
-    embargo_gate_100414 = ShortCircuitOperator(
-        task_id="embargo_gate_100414",
-        python_callable=lambda **kwargs: kwargs["ti"].xcom_pull(
-            task_ids="embargo_docker_100414"
-        )
-        == 0,
-        provide_context=True,
     )
 
     write_to_DataExch = DockerOperator(
@@ -359,10 +340,7 @@ with DAG(
     rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
 
     (
-        [
-            embargo_docker_100413 >> embargo_gate_100413,
-            embargo_docker_100414 >> embargo_gate_100414,
-        ]
+        [embargo_docker_100413, embargo_docker_100414]
         >> write_to_data
         >> load_to_data
         >> [rsync_public_1, rsync_public_2]
