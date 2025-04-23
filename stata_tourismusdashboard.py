@@ -2,12 +2,16 @@
 # stata_tourismusdashboard.py
 """
 
+import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
+from airflow.exceptions import AirflowFailException
 from airflow.models import Variable
+from airflow.operators.python import PythonOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
+from pytz import timezone
 
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
@@ -25,6 +29,29 @@ default_args = {
     "retries": 0,
     "retry_delay": timedelta(minutes=15),
 }
+
+
+def check_embargo_timestamp(file_path: str, **kwargs):
+    tz = timezone("Europe/Zurich")
+    now = datetime.now(tz)
+
+    if not os.path.exists(file_path):
+        raise AirflowFailException(f"Embargo file {file_path} does not exist.")
+
+    with open(file_path, "r") as f:
+        timestamp_str = f.read().strip()
+
+    try:
+        embargo_time = datetime.fromisoformat(timestamp_str).astimezone(tz)
+    except ValueError as e:
+        raise AirflowFailException(f"Invalid timestamp format in {file_path}: {e}")
+
+    if now - embargo_time > timedelta(hours=24):
+        raise AirflowFailException(
+            f"Embargo timestamp {embargo_time.isoformat()} in {file_path} is older than 24 hours."
+        )
+
+
 with DAG(
     "stata_tourismusdashboard",
     default_args=default_args,
@@ -111,7 +138,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
+        command="python3 -m rsync.sync_files stata_tourismus_100413_prod.json",
         container_name="stata_konoer--rsync_test",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -136,6 +163,31 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
+        command="python3 -m rsync.sync_files stata_tourismus_100413_prod.json",
+        container_name="stata_konoer--rsync_test",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                target="/code/data",
+                type="bind",
+            ),
+        ],
+    )
+
+    rsync_100413_public = DockerOperator(
+        task_id="rsync_100413_public",
+        image="rsync:latest",
+        api_version="auto",
+        auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
         container_name="stata_konoer--rsync_test",
         docker_url="unix://var/run/docker.sock",
@@ -156,4 +208,55 @@ with DAG(
         ],
     )
 
-    upload >> rsync_100413_test >> rsync_100414_test >> rsync_100413_prod >> rsync_100414_prod
+    rsync_100414_public = DockerOperator(
+        task_id="rsync_100414_public",
+        image="rsync:latest",
+        api_version="auto",
+        auto_remove="force",
+        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
+        container_name="stata_konoer--rsync_test",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                target="/code/data",
+                type="bind",
+            ),
+        ],
+    )
+
+    embargo_100413 = PythonOperator(
+        task_id="embargo_100413",
+        python_callable=check_embargo_timestamp,
+        op_kwargs={
+            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100413_tourismus_daily_embargo.txt"
+        },
+    )
+
+    embargo_100414 = PythonOperator(
+        task_id="embargo_100414",
+        python_callable=check_embargo_timestamp,
+        op_kwargs={
+            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100414_tourismus_daily_embargo.txt"
+        },
+    )
+
+    (
+        upload
+        >> rsync_100413_test
+        >> rsync_100414_test
+        >> rsync_100413_prod
+        >> rsync_100414_prod
+        >> embargo_100413
+        >> rsync_100413_public
+        >> embargo_100414
+        >> rsync_100414_public
+    )
