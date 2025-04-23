@@ -16,6 +16,7 @@ from pytz import timezone
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
 http_proxy = Variable.get("http_proxy")
+PATH_TO_CODE = Variable.get("PATH_TO_CODE")
 DB_CONNECTION_STRING_TOURISMUS = Variable.get("DB_CONNECTION_STRING_TOURISMUS")
 
 default_args = {
@@ -99,7 +100,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -124,7 +125,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -149,7 +150,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -174,13 +175,27 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
                 type="bind",
             ),
         ],
+    )
+
+    embargo_100413 = DockerOperator(
+        task_id="embargo_100413",
+        image="python:3.12-slim",
+        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
+        mounts=[
+            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
+            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+        ],
+        auto_remove="force",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
     )
 
     rsync_100413_public = DockerOperator(
@@ -199,13 +214,26 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
                 type="bind",
             ),
         ],
+    )
+
+    embargo_100414 = DockerOperator(
+        task_id="embargo_100414",
+        image="python:3.12-slim",
+        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
+        mounts=[
+            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
+            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+        ],
+        auto_remove="force",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
     )
 
     rsync_100414_public = DockerOperator(
@@ -224,29 +252,13 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
                 type="bind",
             ),
         ],
-    )
-
-    embargo_100413 = PythonOperator(
-        task_id="embargo_100413",
-        python_callable=check_embargo_timestamp,
-        op_kwargs={
-            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100413_tourismus-daily_embargo.txt"
-        },
-    )
-
-    embargo_100414 = PythonOperator(
-        task_id="embargo_100414",
-        python_callable=check_embargo_timestamp,
-        op_kwargs={
-            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100414_tourismus-daily_embargo.txt"
-        },
     )
 
     (
