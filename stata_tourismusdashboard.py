@@ -237,7 +237,7 @@ with DAG(
         task_id="embargo_100413",
         python_callable=check_embargo_timestamp,
         op_kwargs={
-            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100413_tourismus_daily_embargo.txt"
+            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100413_tourismus-daily_embargo.txt"
         },
     )
 
@@ -245,7 +245,7 @@ with DAG(
         task_id="embargo_100414",
         python_callable=check_embargo_timestamp,
         op_kwargs={
-            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100414_tourismus_daily_embargo.txt"
+            "file_path": "/mnt/OGD-DataExch/StatA/Tourismus/100414_tourismus-daily_embargo.txt"
         },
     )
 
