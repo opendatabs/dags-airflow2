@@ -72,6 +72,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -96,6 +97,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -120,6 +122,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
@@ -144,6 +147,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
+            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
                 target="/code/data",
