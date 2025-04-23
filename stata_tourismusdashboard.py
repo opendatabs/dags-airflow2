@@ -167,7 +167,7 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
                 target="/code/data",
                 type="bind",
             )
@@ -327,7 +327,8 @@ with DAG(
     (
         write_to_DataExch
         >> load_to_DataExch
-        >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
+        >> [rsync_test_1, rsync_test_2]
+        >> [rsync_prod_1, rsync_prod_2]
     )
     # embargo checks
     [embargo_100413, embargo_100414] >> gate_embargo_passed
