@@ -6,13 +6,10 @@ import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.exceptions import AirflowSkipException
-from airflow.operators.python import ShortCircuitOperator
-from airflow.models.xcom_arg import XComArg
+from airflow.utils.trigger_rule import TriggerRule
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
-from pytz import timezone
 
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
@@ -31,10 +28,6 @@ default_args = {
     "retry_delay": timedelta(minutes=15),
 }
 
-def both_embargos_passed():
-    with open('/mnt/shared/embargo_100413_status.txt') as f1, open('/mnt/shared/embargo_100414_status.txt') as f2:
-        return f1.read().strip() == "true" and f2.read().strip() == "true"
-
 with DAG(
     "stata_tourismusdashboard",
     default_args=default_args,
@@ -45,7 +38,7 @@ with DAG(
     embargo_100413 = DockerOperator(
         task_id="embargo_100413",
         image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt /code/embargo_100413_status.txt",
+        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
         mounts=[
             Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
             Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
@@ -59,7 +52,7 @@ with DAG(
     embargo_100414 = DockerOperator(
         task_id="embargo_100414",
         image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt /code/embargo_100414_status.txt",
+        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
         mounts=[
             Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
             Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
@@ -67,11 +60,6 @@ with DAG(
         auto_remove="force",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-    )
-
-    gate_embargo_passed = ShortCircuitOperator(
-        task_id="gate_embargo_passed",
-        python_callable=both_embargos_passed,
     )
 
     write_to_DataExch = DockerOperator(
@@ -322,14 +310,16 @@ with DAG(
         ],
     )
 
+    load_to_data.trigger_rule = TriggerRule.ALL_DONE
+    rsync_public_1.trigger_rule = TriggerRule.ALL_DONE
+    rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
+
     (
         write_to_DataExch
         >> load_to_DataExch
         >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
     )
-    # embargo checks
-    [embargo_100413, embargo_100414] >> gate_embargo_passed
 
-    # gate controls whether write_to_data runs
-    gate_embargo_passed >> write_to_data >> load_to_data
+    [embargo_100413, embargo_100414] >> write_to_data >> load_to_data
+    # Run load_to_data even if the previous tasks is skipped
     load_to_data >> [rsync_public_1, rsync_public_2]
