@@ -324,15 +324,12 @@ with DAG(
         ],
     )
 
-    (
-        write_to_DataExch
-        >> load_to_DataExch
-        >> [rsync_test_1, rsync_test_2]
-        >> [rsync_prod_1, rsync_prod_2]
-    )
+    write_to_DataExch >> load_to_DataExch
+    load_to_DataExch >> [rsync_test_1, rsync_test_2]
+    rsync_test_1 >> rsync_prod_1
+    rsync_test_2 >> rsync_prod_2
     # embargo checks
     [embargo_100413, embargo_100414] >> gate_embargo_passed
-
     # gate controls whether write_to_data runs
     gate_embargo_passed >> write_to_data >> load_to_data
     load_to_data >> [rsync_public_1, rsync_public_2]
