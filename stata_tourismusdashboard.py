@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.exceptions import AirflowFailException
+from airflow.exceptions import AirflowSkipException
 from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 from airflow.providers.docker.operators.docker import DockerOperator
@@ -36,7 +36,7 @@ def check_embargo_timestamp(file_path: str, **kwargs):
     now = datetime.now(tz)
 
     if not os.path.exists(file_path):
-        raise AirflowFailException(f"Embargo file {file_path} does not exist.")
+        raise AirflowSkipException(f"Embargo file {file_path} does not exist.")
 
     with open(file_path, "r") as f:
         timestamp_str = f.read().strip()
@@ -44,10 +44,10 @@ def check_embargo_timestamp(file_path: str, **kwargs):
     try:
         embargo_time = datetime.fromisoformat(timestamp_str).astimezone(tz)
     except ValueError as e:
-        raise AirflowFailException(f"Invalid timestamp format in {file_path}: {e}")
+        raise AirflowSkipException(f"Invalid timestamp format in {file_path}: {e}")
 
     if now - embargo_time > timedelta(hours=24):
-        raise AirflowFailException(
+        raise AirflowSkipException(
             f"Embargo timestamp {embargo_time.isoformat()} in {file_path} is older than 24 hours."
         )
 
