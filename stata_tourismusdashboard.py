@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import ShortCircuitOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.utils.trigger_rule import TriggerRule
 from docker.types import Mount
@@ -35,12 +35,8 @@ with DAG(
     schedule_interval="*/15 * * * *",
     catchup=False,
 ) as dag:
-    # Dummy operators for the "skip" paths
-    skip_embargo_100413 = EmptyOperator(task_id="skip_embargo_100413")
-    skip_embargo_100414 = EmptyOperator(task_id="skip_embargo_100414")
-
-    embargo_100413 = DockerOperator(
-        task_id="embargo_100413",
+    embargo_docker_100413 = DockerOperator(
+        task_id="embargo_docker_100413",
         image="python:3.12-slim",
         command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
         mounts=[
@@ -59,10 +55,20 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        do_xcom_push=True,
     )
 
-    embargo_100414 = DockerOperator(
-        task_id="embargo_100414",
+    embargo_gate_100413 = ShortCircuitOperator(
+        task_id="embargo_gate_100413",
+        python_callable=lambda **kwargs: kwargs["ti"].xcom_pull(
+            task_ids="embargo_docker_100413"
+        )
+        == 0,
+        provide_context=True,
+    )
+
+    embargo_docker_100414 = DockerOperator(
+        task_id="embargo_docker_100414",
         image="python:3.12-slim",
         command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
         mounts=[
@@ -81,6 +87,16 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        do_xcom_push=True,
+    )
+
+    embargo_gate_100414 = ShortCircuitOperator(
+        task_id="embargo_gate_100414",
+        python_callable=lambda **kwargs: kwargs["ti"].xcom_pull(
+            task_ids="embargo_docker_100414"
+        )
+        == 0,
+        provide_context=True,
     )
 
     write_to_DataExch = DockerOperator(
@@ -337,18 +353,17 @@ with DAG(
         >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
     )
 
-    # Chain embargo tasks to write_to_data with conditional logic
-    write_to_data.trigger_rule = (
-        TriggerRule.ONE_SUCCESS
-    )  # Either embargo task "proceeds" (non-skipped) triggers this
-
-    # Embargo chain setup
-    [embargo_100413, skip_embargo_100413] >> write_to_data
-    [embargo_100414, skip_embargo_100414] >> write_to_data
-
     # Set downstream trigger rules for continued robustness
     load_to_data.trigger_rule = TriggerRule.ALL_DONE
     rsync_public_1.trigger_rule = TriggerRule.ALL_DONE
     rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
 
-    write_to_data >> load_to_data >> [rsync_public_1, rsync_public_2]
+    (
+        [
+            embargo_docker_100413 >> embargo_gate_100413,
+            embargo_docker_100414 >> embargo_gate_100414,
+        ]
+        >> write_to_data
+        >> load_to_data
+        >> [rsync_public_1, rsync_public_2]
+    )
