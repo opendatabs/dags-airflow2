@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.exceptions import AirflowSkipException
+from airflow.operators.python import ShortCircuitOperator
+from airflow.models.xcom_arg import XComArg
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
@@ -20,7 +22,6 @@ DB_CONNECTION_STRING_TOURISMUS = Variable.get("DB_CONNECTION_STRING_TOURISMUS")
 
 default_args = {
     "owner": "orhan.saeedi",
-    "description": "Run the stata_tourismusdashboard docker container",
     "depend_on_past": False,
     "start_date": datetime(2025, 4, 11),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -30,36 +31,53 @@ default_args = {
     "retry_delay": timedelta(minutes=15),
 }
 
-
-def check_embargo_timestamp(file_path: str, **kwargs):
-    tz = timezone("Europe/Zurich")
-    now = datetime.now(tz)
-
-    if not os.path.exists(file_path):
-        raise AirflowSkipException(f"Embargo file {file_path} does not exist.")
-
-    with open(file_path, "r") as f:
-        timestamp_str = f.read().strip()
-
-    try:
-        embargo_time = datetime.fromisoformat(timestamp_str).astimezone(tz)
-    except ValueError as e:
-        raise AirflowSkipException(f"Invalid timestamp format in {file_path}: {e}")
-
-    if now - embargo_time > timedelta(hours=24):
-        raise AirflowSkipException(
-            f"Embargo timestamp {embargo_time.isoformat()} in {file_path} is older than 24 hours."
-        )
-
+def both_embargos_passed(**kwargs):
+    ti = kwargs['ti']
+    e1 = ti.xcom_pull(task_ids="embargo_100413")
+    e2 = ti.xcom_pull(task_ids="embargo_100414")
+    return e1 and e2  # Will short-circuit if either is False or None
 
 with DAG(
     "stata_tourismusdashboard",
     default_args=default_args,
-    schedule_interval="0 10 * * *",
+    description="Run the stata_tourismusdashboard docker container",
+    schedule_interval="*/15 * * * *",
     catchup=False,
 ) as dag:
-    upload = DockerOperator(
-        task_id="upload",
+    embargo_100413 = DockerOperator(
+        task_id="embargo_100413",
+        image="python:3.12-slim",
+        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
+        mounts=[
+            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
+            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+        ],
+        auto_remove="force",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
+
+    embargo_100414 = DockerOperator(
+        task_id="embargo_100414",
+        image="python:3.12-slim",
+        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
+        mounts=[
+            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
+            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+        ],
+        auto_remove="force",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+    )
+
+    gate_embargo_passed = ShortCircuitOperator(
+        task_id="gate_embargo_passed",
+        python_callable=both_embargos_passed,
+    )
+
+    write_to_DataExch = DockerOperator(
+        task_id="write_to_DataExch",
         image="ghcr.io/opendatabs/tourismusdashboard:latest",
         force_pull=True,
         api_version="auto",
@@ -70,7 +88,7 @@ with DAG(
             "http_proxy": http_proxy,
             "DB_CONNECTION_STRING_TOURISMUS": DB_CONNECTION_STRING_TOURISMUS,
         },
-        container_name="stata_tourismusdashboard--transform",
+        container_name="write_to_DataExch",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -83,8 +101,8 @@ with DAG(
         ],
     )
 
-    download = DockerOperator(
-        task_id="download",
+    load_to_DataExch = DockerOperator(
+        task_id="load_to_DataExch",
         image="ghcr.io/opendatabs/tourismusdashboard:latest",
         force_pull=True,
         api_version="auto",
@@ -94,7 +112,56 @@ with DAG(
             "https_proxy": https_proxy,
             "http_proxy": http_proxy,
         },
-        container_name="stata_tourismusdashboard--transform",
+        container_name="load_to_DataExch",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                target="/code/data",
+                type="bind",
+            )
+        ],
+    )
+
+    write_to_data = DockerOperator(
+        task_id="write_to_data",
+        image="ghcr.io/opendatabs/tourismusdashboard:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        command="Rscript /code/app_write_OGD.R",
+        private_environment={
+            "https_proxy": https_proxy,
+            "http_proxy": http_proxy,
+            "DB_CONNECTION_STRING_TOURISMUS": DB_CONNECTION_STRING_TOURISMUS,
+        },
+        container_name="write_to_data",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
+                target="/code/data",
+                type="bind",
+            )
+        ],
+    )
+
+    load_to_data = DockerOperator(
+        task_id="load_to_data",
+        image="ghcr.io/opendatabs/tourismusdashboard:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        command="Rscript /code/app_load_from_OGD.R",
+        private_environment={
+            "https_proxy": https_proxy,
+            "http_proxy": http_proxy,
+        },
+        container_name="load_to_data",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -113,7 +180,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_test_1.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_test_1",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -138,7 +205,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_test_2.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_test_2",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -163,7 +230,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_prod_1.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_prod_1",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -188,7 +255,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_prod_2.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_prod_2",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -205,20 +272,6 @@ with DAG(
                 type="bind",
             ),
         ],
-    )
-
-    embargo_100413 = DockerOperator(
-        task_id="embargo_100413",
-        image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
-        mounts=[
-            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
-            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
-        ],
-        auto_remove="force",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
     )
 
     rsync_public_1 = DockerOperator(
@@ -227,7 +280,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_test_1.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_public_1",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -239,24 +292,11 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
                 target="/code/data",
                 type="bind",
             ),
         ],
-    )
-
-    embargo_100414 = DockerOperator(
-        task_id="embargo_100414",
-        image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
-        mounts=[
-            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
-            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
-        ],
-        auto_remove="force",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
     )
 
     rsync_public_2 = DockerOperator(
@@ -265,7 +305,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m rsync.sync_files stata_tourismus_test_2.json",
-        container_name="stata_konoer--rsync_test",
+        container_name="rsync_public_2",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -277,7 +317,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -285,13 +325,13 @@ with DAG(
     )
 
     (
-        upload
-        >> rsync_test_1
-        >> rsync_test_2
-        >> rsync_prod_1
-        >> rsync_prod_2
-        >> embargo_100413
-        >> rsync_public_1
-        >> embargo_100414
-        >> rsync_public_2
+        write_to_DataExch
+        >> load_to_DataExch
+        >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
     )
+    # embargo checks
+    [embargo_100413, embargo_100414] >> gate_embargo_passed
+
+    # gate controls whether write_to_data runs
+    gate_embargo_passed >> write_to_data >> load_to_data
+    load_to_data >> [rsync_public_1, rsync_public_2]
