@@ -2,13 +2,13 @@
 # stata_tourismusdashboard.py
 """
 
-import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.utils.trigger_rule import TriggerRule
 from airflow.models import Variable
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.utils.trigger_rule import TriggerRule
 from docker.types import Mount
 
 # This is set in the Airflow UI under Admin -> Variables
@@ -35,18 +35,29 @@ with DAG(
     schedule_interval="*/15 * * * *",
     catchup=False,
 ) as dag:
+    # Dummy operators for the "skip" paths
+    skip_embargo_100413 = EmptyOperator(task_id="skip_embargo_100413")
+    skip_embargo_100414 = EmptyOperator(task_id="skip_embargo_100414")
+
     embargo_100413 = DockerOperator(
         task_id="embargo_100413",
         image="python:3.12-slim",
         command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
         mounts=[
-            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
-            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+            Mount(
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard",
+                target="/code",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                target="/code/data",
+                type="bind",
+            ),
         ],
         auto_remove="force",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        skip_on_exit_code=int(0),
         tty=True,
     )
 
@@ -55,13 +66,20 @@ with DAG(
         image="python:3.12-slim",
         command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
         mounts=[
-            Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
-            Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
+            Mount(
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard",
+                target="/code",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                target="/code/data",
+                type="bind",
+            ),
         ],
         auto_remove="force",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        skip_on_exit_code=int(0),
         tty=True,
     )
 
@@ -313,16 +331,24 @@ with DAG(
         ],
     )
 
-    load_to_data.trigger_rule = TriggerRule.ALL_DONE
-    rsync_public_1.trigger_rule = TriggerRule.ALL_DONE
-    rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
-
     (
         write_to_DataExch
         >> load_to_DataExch
         >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
     )
 
-    [embargo_100413, embargo_100414] >> write_to_data >> load_to_data
-    # Run load_to_data even if the previous tasks is skipped
-    load_to_data >> [rsync_public_1, rsync_public_2]
+    # Chain embargo tasks to write_to_data with conditional logic
+    write_to_data.trigger_rule = (
+        TriggerRule.ONE_SUCCESS
+    )  # Either embargo task "proceeds" (non-skipped) triggers this
+
+    # Embargo chain setup
+    [embargo_100413, skip_embargo_100413] >> write_to_data
+    [embargo_100414, skip_embargo_100414] >> write_to_data
+
+    # Set downstream trigger rules for continued robustness
+    load_to_data.trigger_rule = TriggerRule.ALL_DONE
+    rsync_public_1.trigger_rule = TriggerRule.ALL_DONE
+    rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
+
+    write_to_data >> load_to_data >> [rsync_public_1, rsync_public_2]
