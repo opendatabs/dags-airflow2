@@ -83,12 +83,12 @@ with DAG(
         ],
     )
 
-    rsync_100413_test = DockerOperator(
-        task_id="rsync_100413_test",
+    rsync_test = DockerOperator(
+        task_id="rsync_test",
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
+        command="python3 -m rsync.sync_files stata_tourismus_test.json",
         container_name="stata_konoer--rsync_test",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -101,19 +101,19 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source="/mnt/OGD-DataExch/StatA/Tourismus/dashboard",
                 target="/code/data",
                 type="bind",
             ),
         ],
     )
 
-    rsync_100414_test = DockerOperator(
-        task_id="rsync_100414_test",
+    rsync_prod = DockerOperator(
+        task_id="rsync_prod",
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
+        command="python3 -m rsync.sync_files stata_tourismus_prod.json",
         container_name="stata_konoer--rsync_test",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -126,57 +126,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
-                type="bind",
-            ),
-        ],
-    )
-
-    rsync_100413_prod = DockerOperator(
-        task_id="rsync_100413_prod",
-        image="rsync:latest",
-        api_version="auto",
-        auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_prod.json",
-        container_name="stata_konoer--rsync_test",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
-            Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
-                type="bind",
-            ),
-        ],
-    )
-
-    rsync_100414_prod = DockerOperator(
-        task_id="rsync_100414_prod",
-        image="rsync:latest",
-        api_version="auto",
-        auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_prod.json",
-        container_name="stata_konoer--rsync_test",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
-            Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source="/mnt/OGD-DataExch/StatA/Tourismus/dashboard",
                 target="/code/data",
                 type="bind",
             ),
@@ -197,31 +147,6 @@ with DAG(
         tty=True,
     )
 
-    rsync_100413_public = DockerOperator(
-        task_id="rsync_100413_public",
-        image="rsync:latest",
-        api_version="auto",
-        auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
-        container_name="stata_konoer--rsync_test",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
-            Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
-                type="bind",
-            ),
-        ],
-    )
-
     embargo_100414 = DockerOperator(
         task_id="embargo_100414",
         image="python:3.12-slim",
@@ -235,12 +160,12 @@ with DAG(
         network_mode="bridge",
     )
 
-    rsync_100414_public = DockerOperator(
-        task_id="rsync_100414_public",
+    rsync_public = DockerOperator(
+        task_id="rsync_public",
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_100413_test.json",
+        command="python3 -m rsync.sync_files stata_tourismus_test.json",
         container_name="stata_konoer--rsync_test",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -253,7 +178,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source="/mnt/OGD-DataExch/StatA/Tourismus/dashboard",
                 target="/code/data",
                 type="bind",
             ),
@@ -262,12 +187,9 @@ with DAG(
 
     (
         upload
-        >> rsync_100413_test
-        >> rsync_100414_test
-        >> rsync_100413_prod
-        >> rsync_100414_prod
+        >> rsync_test
+        >> rsync_prod
         >> embargo_100413
-        >> rsync_100413_public
         >> embargo_100414
-        >> rsync_100414_public
+        >> rsync_public
     )
