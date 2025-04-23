@@ -31,11 +31,9 @@ default_args = {
     "retry_delay": timedelta(minutes=15),
 }
 
-def both_embargos_passed(**kwargs):
-    ti = kwargs['ti']
-    e1 = ti.xcom_pull(task_ids="embargo_100413")
-    e2 = ti.xcom_pull(task_ids="embargo_100414")
-    return e1 and e2  # Will short-circuit if either is False or None
+def both_embargos_passed():
+    with open('/mnt/shared/embargo_100413_status.txt') as f1, open('/mnt/shared/embargo_100414_status.txt') as f2:
+        return f1.read().strip() == "true" and f2.read().strip() == "true"
 
 with DAG(
     "stata_tourismusdashboard",
@@ -47,7 +45,7 @@ with DAG(
     embargo_100413 = DockerOperator(
         task_id="embargo_100413",
         image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt",
+        command="python3 /code/check_embargo.py /code/data/100413_tourismus-daily_embargo.txt /code/embargo_100413_status.txt",
         mounts=[
             Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
             Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
@@ -61,7 +59,7 @@ with DAG(
     embargo_100414 = DockerOperator(
         task_id="embargo_100414",
         image="python:3.12-slim",
-        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt",
+        command="python3 /code/check_embargo.py /code/data/100414_tourismus-daily_embargo.txt /code/embargo_100414_status.txt",
         mounts=[
             Mount(source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard", target="/code", type="bind"),
             Mount(source="/mnt/OGD-DataExch/StatA/Tourismus", target="/code/data", type="bind"),
