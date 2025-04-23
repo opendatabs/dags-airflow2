@@ -46,7 +46,7 @@ with DAG(
         auto_remove="force",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        skip_on_exit_code=0,
+        skip_on_exit_code=int(0),
         tty=True,
     )
 
@@ -61,7 +61,7 @@ with DAG(
         auto_remove="force",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        skip_on_exit_code=0,
+        skip_on_exit_code=int(0),
         tty=True,
     )
 
