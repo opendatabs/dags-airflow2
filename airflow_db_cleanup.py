@@ -10,7 +10,6 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-
 PATH_TO_CODE = Variable.get("PATH_TO_CODE")
 
 # Define default arguments for the DAG
