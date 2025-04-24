@@ -42,7 +42,7 @@ with DAG(
         auto_remove="force",
         private_environment={
             **COMMON_ENV_VARS,
-            "API_KEY": Variable.get("API_KEY_METEOBLUE"),
+            "API_KEY_METEOBLUE": Variable.get("API_KEY_METEOBLUE"),
             "FTP_USER_07": Variable.get("FTP_USER_07"),
             "FTP_PASS_07": Variable.get("FTP_PASS_07"),
             "ODS_PUSH_URL_100294": Variable.get("ODS_PUSH_URL_100294"),

@@ -43,8 +43,8 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
-            "PUBLIC_KEY": Variable.get("PUBLIC_KEY_FIELDCLIMATE"),
-            "PRIVATE_KEY": Variable.get("PRIVATE_KEY_FIELDCLIMATE"),
+            "PUBLIC_KEY_FIELDCLIMATE": Variable.get("PUBLIC_KEY_FIELDCLIMATE"),
+            "PRIVATE_KEY_FIELDCLIMATE": Variable.get("PRIVATE_KEY_FIELDCLIMATE"),
             "FTP_USER_08": Variable.get("FTP_USER_08"),
             "FTP_PASS_08": Variable.get("FTP_PASS_08"),
         },
