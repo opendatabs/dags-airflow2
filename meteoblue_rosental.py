@@ -14,7 +14,6 @@ from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
-
 default_args = {
     "owner": "hester.pieters",
     "depend_on_past": False,
