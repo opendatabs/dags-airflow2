@@ -73,10 +73,20 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing",
-                target="/code/data-processing",
+                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/data",
+                target="/code/data",
                 type="bind",
-            )
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/kapo_geschwindigkeitsmonitoring/data",
+                target="/code/data_orig",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/change_tracking",
+                target="/code/change_tracking",
+                type="bind",
+            ),
         ],
     )
 
