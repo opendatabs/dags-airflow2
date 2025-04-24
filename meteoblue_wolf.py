@@ -73,8 +73,8 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/meteoblue_wolf/data",
-                target="/code/data",
+                source=f"{PATH_TO_CODE}/data-processing",
+                target="/code/data-processing",
                 type="bind",
             )
         ],
