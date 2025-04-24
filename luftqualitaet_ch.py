@@ -41,7 +41,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="uv run -m src.etl",
+        command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
             "FTP_USER_07": Variable.get("FTP_USER_07"),

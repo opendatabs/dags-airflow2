@@ -39,7 +39,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="uv run -m src.etl_https",
+        command="uv run -m etl_https",
         private_environment={
             **COMMON_ENV_VARS,
             "HTTPS_URL_01": Variable.get("HTTPS_URL_01"),
