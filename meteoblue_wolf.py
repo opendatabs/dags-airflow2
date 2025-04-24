@@ -67,26 +67,16 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="python3 -m ods_publish.etl_id 100009,100082",
-        container_name="meteoblue-wolf--ods_publish",
+        container_name="meteoblue_wolf--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/data",
+                source=f"{PATH_TO_CODE}/data-processing/meteoblue_wolf/data",
                 target="/code/data",
                 type="bind",
-            ),
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing/kapo_geschwindigkeitsmonitoring/data",
-                target="/code/data_orig",
-                type="bind",
-            ),
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/change_tracking",
-                target="/code/change_tracking",
-                type="bind",
-            ),
+            )
         ],
     )
 

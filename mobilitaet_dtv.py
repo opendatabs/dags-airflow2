@@ -12,12 +12,10 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-# This is set in the Airflow UI under Admin -> Variables
-https_proxy = Variable.get("https_proxy")
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "jonas.bieri",
-    "description": "Run the mobilitaet_dtv docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 2, 2),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -29,6 +27,7 @@ default_args = {
 
 with DAG(
     "mobilitaet_dtv",
+    description="Run the mobilitaet_dtv docker container",
     default_args=default_args,
     schedule_interval="0 3 * * *",
     catchup=False,
@@ -40,17 +39,27 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        private_environment={"https_proxy": https_proxy},
         command="uv run -m etl",
+        private_environment=COMMON_ENV_VARS,
         container_name="mobilitaet_dtv--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source="/data/dev/workspace/data-processing",
-                target="/code/data-processing",
+                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/data",
+                target="/code/data",
                 type="bind",
-            )
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/kapo_geschwindigkeitsmonitoring/data",
+                target="/code/data_orig",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_dtv/change_tracking",
+                target="/code/change_tracking",
+                type="bind",
+            ),
         ],
     )
