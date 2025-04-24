@@ -17,7 +17,6 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "hester.pieters",
-    "description": "Run the meteoblue_rosental docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 1, 26),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -30,6 +29,7 @@ default_args = {
 with DAG(
     "meteoblue_rosental",
     default_args=default_args,
+    description="Run the meteoblue_rosental docker container",
     schedule_interval="45 * * * *",
     catchup=False,
 ) as dag:
