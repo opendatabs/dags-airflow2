@@ -70,21 +70,15 @@ with DAG(
 
     ods_publish = DockerOperator(
         task_id="ods-publish",
-        image="ods_publish:latest",
+        image="ghcr.io/opendatabs/data-processing/ods_publish:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m ods_publish.etl_id 100078",
+        command="uv run -m etl_id 100078",
+        private_environment=COMMON_ENV_VARS,
         container_name="euroairport--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing",
-                target="/code/data-processing",
-                type="bind",
-            )
-        ],
+        tty=True
     )
 
     upload >> ods_publish

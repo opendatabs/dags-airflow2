@@ -72,21 +72,15 @@ with DAG(
 
     ods_publish = DockerOperator(
         task_id="ods-publish",
-        image="ods_publish:latest",
+        image="ghcr.io/opendatabs/data-processing/ods_publish:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m ods_publish.etl_id 100006,100013,100356",
+        command="uv run -m etl_id 100006,100013,100356",
+        private_environment=COMMON_ENV_VARS,
         container_name="mobilitaet_verkehrszaehldaten--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[
-            Mount(
-                source="/data/dev/workspace/data-processing",
-                target="/code/data-processing",
-                type="bind",
-            )
-        ],
     )
 
     rsync = DockerOperator(
