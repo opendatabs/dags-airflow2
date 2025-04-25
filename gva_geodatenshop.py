@@ -58,21 +58,15 @@ with DAG(
 
     ods_harvest = DockerOperator(
         task_id="ods-harvest",
-        image="ods_harvest:latest",
+        image="ghcr.io/opendatabs/data-processing/ods_harvest:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m ods_harvest.etl gva-ftp-csv",
+        command="uv run -m etl gva-ftp-csv",
+        private_environment=COMMON_ENV_VARS,
         container_name="gva-geodatenshop--ods_harvest",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing",
-                target="/code/data-processing",
-                type="bind",
-            )
-        ],
     )
 
     process_upload >> ods_harvest
