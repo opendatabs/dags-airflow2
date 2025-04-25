@@ -246,7 +246,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
+                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -271,56 +271,6 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
-                type="bind",
-            ),
-        ],
-    )
-
-    rsync_public_1 = DockerOperator(
-        task_id="rsync_public_1",
-        image="rsync:latest",
-        api_version="auto",
-        auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_public_1.json",
-        container_name="rsync_public_1",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
-            Mount(
-                source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
-                target="/code/data",
-                type="bind",
-            ),
-        ],
-    )
-
-    rsync_public_2 = DockerOperator(
-        task_id="rsync_public_2",
-        image="rsync:latest",
-        api_version="auto",
-        auto_remove="force",
-        command="python3 -m rsync.sync_files stata_tourismus_public_2.json",
-        container_name="rsync_public_2",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
-            Mount(
                 source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
                 target="/code/data",
                 type="bind",
@@ -331,17 +281,17 @@ with DAG(
     (
         write_to_DataExch
         >> load_to_DataExch
-        >> [rsync_test_1, rsync_test_2, rsync_prod_1, rsync_prod_2]
+        >> [rsync_test_1, rsync_test_2]
     )
 
     # Set downstream trigger rules for continued robustness
     load_to_data.trigger_rule = TriggerRule.ALL_DONE
-    rsync_public_1.trigger_rule = TriggerRule.ALL_DONE
-    rsync_public_2.trigger_rule = TriggerRule.ALL_DONE
+    rsync_prod_1.trigger_rule = TriggerRule.ALL_DONE
+    rsync_prod_2.trigger_rule = TriggerRule.ALL_DONE
 
     (
         [embargo_docker_100413, embargo_docker_100414]
         >> write_to_data
         >> load_to_data
-        >> [rsync_public_1, rsync_public_2]
+        >> [rsync_prod_1, rsync_prod_2]
     )
