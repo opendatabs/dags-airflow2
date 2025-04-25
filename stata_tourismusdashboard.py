@@ -278,11 +278,7 @@ with DAG(
         ],
     )
 
-    (
-        write_to_DataExch
-        >> load_to_DataExch
-        >> [rsync_test_1, rsync_test_2]
-    )
+    (write_to_DataExch >> load_to_DataExch >> [rsync_test_1, rsync_test_2])
 
     # Set downstream trigger rules for continued robustness
     load_to_data.trigger_rule = TriggerRule.ALL_DONE
