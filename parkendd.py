@@ -38,6 +38,7 @@ with DAG(
     process_upload = DockerOperator(
         task_id="process-upload",
         image="ghcr.io/opendatabs/data-processing/parkendd:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",

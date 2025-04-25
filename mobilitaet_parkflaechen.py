@@ -36,6 +36,7 @@ with DAG(
     upload = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/mobilitaet_parkflaechen:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",

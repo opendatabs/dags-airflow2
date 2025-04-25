@@ -75,6 +75,7 @@ with DAG(
     ods_publish = DockerOperator(
         task_id="ods-publish",
         image="ghcr.io/opendatabs/data-processing/ods_publish:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl_id 100066,100067,100068",
