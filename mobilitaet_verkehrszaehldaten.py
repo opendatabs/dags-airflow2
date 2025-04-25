@@ -59,7 +59,7 @@ with DAG(
             ),
             Mount(
                 source="/mnt/MOB-StatA",
-                target="/code/data-processing/mobilitaet_verkehrszaehldaten/data_orig",
+                target="/code/data_orig",
                 type="bind",
             ),
             Mount(
