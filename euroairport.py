@@ -78,7 +78,7 @@ with DAG(
         container_name="euroairport--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
-        tty=True
+        tty=True,
     )
 
     upload >> ods_publish
