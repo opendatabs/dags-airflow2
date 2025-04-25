@@ -14,35 +14,56 @@ This DAG updates the following datasets:
 - [100348](https://data.bs.ch/explore/dataset/100348)
 """
 
-from airflow import DAG
 from datetime import datetime, timedelta
+
+from airflow import DAG
+from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+
 default_args = {
-    'owner': 'orhan.saeedi',
-    'description': 'Run the parlamentsdienst_grosserrat docker container',
-    'depend_on_past': False,
-    'start_date': datetime(2024, 2, 2),
-    'email': ["jonas.bieri@bs.ch", "orhan.saeedi@bs.ch", "rstam.aloush@bs.ch", "renato.farruggio@bs.ch"],
-    'email_on_failure': True,
-    'email_on_retry': False,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=15)
+    "owner": "orhan.saeedi",
+    "depend_on_past": False,
+    "start_date": datetime(2024, 2, 2),
+    "email": Variable.get("EMAIL_RECEIVERS"),
+    "email_on_failure": True,
+    "email_on_retry": False,
+    "retries": 0,
+    "retry_delay": timedelta(minutes=15),
 }
 
-with DAG('parlamentsdienst_grosserrat', default_args=default_args, schedule_interval='*/5 * * * *',
-         catchup=False) as dag:
+with DAG(
+    "parlamentsdienst_grosserrat",
+    default_args=default_args,
+    description="Run the parlamentsdienst_grosserrat docker container",
+    schedule_interval="*/5 * * * *",
+    catchup=False,
+) as dag:
     dag.doc_md = __doc__
     upload = DockerOperator(
-        task_id='upload',
-        image='parlamentsdienst_grosserrat:latest',
-        api_version='auto',
-        auto_remove='force',
-        command='python3 -m parlamentsdienst_grosserrat.etl',
-        container_name='parlamentsdienst_grosserrat',
+        task_id="upload",
+        image="ghcr.io/opendatabs/data-processing/parlamentsdienst_grosserrat:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        command="python3 -m parlamentsdienst_grosserrat.etl",
+        container_name="parlamentsdienst_grosserrat",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace/data-processing", target="/code/data-processing", type="bind")]
+        mounts=[
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat/data",
+                target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat/change_tracking",
+                target="/code/change_tracking",
+                type="bind",
+            ),
+        ],
     )
