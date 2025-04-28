@@ -44,8 +44,8 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "HTTPS_URL_TBA_WIESE": Variable.get("HTTPS_URL_TBA_WIESE"),
-            "HTTPS_USER_TBA": Variable.get("HTTPS_USER_TBA"),
-            "HTTPS_PASS_TBA": Variable.get("HTTPS_PASS_TBA"),
+            "HTTPS_USER_TBA_WIESE": Variable.get("HTTPS_USER_TBA_WIESE"),
+            "HTTPS_PASS_TBA_WIESE": Variable.get("HTTPS_PASS_TBA_WIESE"),
             "ODS_PUSH_URL_100269": Variable.get("ODS_PUSH_URL_100269"),
         },
         container_name="tba_wiese--upload",
