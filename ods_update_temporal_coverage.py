@@ -11,7 +11,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import PATH_TO_CODE
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "renato.farruggio",
@@ -34,18 +34,19 @@ with DAG(
     dag.doc_md = __doc__
     upload_bag_datasets = DockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/update_temporal_coverage:latest",
+        image="ghcr.io/opendatabs/data-processing/ods_update_temporal_coverage:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
+        private_environment=COMMON_ENV_VARS,
         container_name="update_temporal_coverage--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_ods/daily_jobs/update_temporal_coverage",
+                source=f"{PATH_TO_CODE}/data-processing/ods_update_temporal_coverage",
                 target="/code",
                 type="bind",
             )
