@@ -3,13 +3,9 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
-from airflow.operators.python import ShortCircuitOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
-
-# This is set in the Airflow UI under Admin -> Variables
-https_proxy = Variable.get("https_proxy")
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -30,7 +26,7 @@ with DAG(
     schedule_interval="*/5 * * * *",
 ) as dag:
     check_file_changed = DockerOperator(
-        task_id="upload",
+        task_id="check_file_changed",
         image="ghcr.io/opendatabs/data-processing/stata_harvester:latest",
         force_pull=True,
         api_version="auto",
@@ -45,7 +41,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        do_xcom_push=True,
+        do_xcom_push=False,  # No need to push logs to XCom
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv",
@@ -60,23 +56,17 @@ with DAG(
         ],
     )
 
-    gate = ShortCircuitOperator(
-        task_id="gate",
-        python_callable=lambda **kwargs: kwargs["ti"].xcom_pull(task_ids="check_file_changed") == 0,
-        provide_context=True,
-    )
-
     ods_harvest = DockerOperator(
-        task_id="ods-harvest",
+        task_id="ods_harvest",
         image="ghcr.io/opendatabs/data-processing/ods_harvest:latest",
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl stata-ftp-csv",
-            private_environment=COMMON_ENV_VARS,
+        private_environment=COMMON_ENV_VARS,
         container_name="stata_harvester--ods_harvest",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
     )
 
-    check_file_changed >> gate >> ods_harvest
+    check_file_changed >> ods_harvest
