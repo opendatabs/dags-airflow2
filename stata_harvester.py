@@ -6,7 +6,7 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.python import ShortCircuitOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 # This is set in the Airflow UI under Admin -> Variables
 https_proxy = Variable.get("https_proxy")
@@ -49,7 +49,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/harvesters/StatA/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/stata_harvester/data",
                 target="/code/change_tracking",
                 type="bind",
             ),
