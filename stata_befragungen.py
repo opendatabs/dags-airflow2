@@ -51,12 +51,12 @@ with DAG(
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_Ablage_StatA",
-                target="/code/data_orig",
+                target="/code/data_orig/55plus",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_OGD",
-                target="/code/data",
+                target="/code/data/55plus",
                 type="bind",
             ),
         ],
