@@ -45,28 +45,18 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data",
-                target="/code/data",
-                type="bind",
-            ),
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data_orig",
-                target="/code/data_orig",
-                type="bind",
-            ),
-            Mount(
                 source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_Ablage_StatA",
-                target="/code/data_orig/55plus",
+                target="/code/data_orig",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_OGD",
-                target="/code/data/55plus",
+                target="/code/data",
                 type="bind",
             ),
         ],
