@@ -54,7 +54,7 @@ with DAG(
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/BIK",
-                target="/code/data-processing/stata_bik/data_orig",
+                target="/code/data_orig",
                 type="bind",
             ),
             Mount(
