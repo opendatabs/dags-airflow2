@@ -50,8 +50,8 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_daily_upload/data",
-                target="/code/data/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/stata_daily_upload/change_tracking",
+                target="/code/change_tracking",
                 type="bind",
             ),
         ],
