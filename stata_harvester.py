@@ -45,11 +45,11 @@ with DAG(
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv",
-                target="/code/data-processing/stata_harvester/data_orig",
+                target="/code/data_orig",
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_harvester/data",
+                source=f"{PATH_TO_CODE}/data-processing/stata_harvester/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
