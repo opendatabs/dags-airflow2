@@ -41,7 +41,7 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
-            "ODS_PUSH_URL": Variable.get("ODS_PUSH_URL"),
+            "ODS_PUSH_URL_100047": Variable.get("ODS_PUSH_URL_100047"),
             "HTTPS_URL": Variable.get("HTTPS_URL_LADESTATIONEN"),
             "HTTPS_URL_AUTH": Variable.get("HTTPS_URL_AUTH_LADESTATIONEN"),
             "HTTPS_USER": Variable.get("HTTPS_USER_LADESTATIONEN"),

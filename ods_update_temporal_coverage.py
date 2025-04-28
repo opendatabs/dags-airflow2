@@ -45,8 +45,8 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_ods/daily_jobs/update_temporal_coverage/data",
-                target="/code/data",
+                source=f"{PATH_TO_CODE}/data-processing/stata_ods/daily_jobs/update_temporal_coverage",
+                target="/code",
                 type="bind",
             )
         ],

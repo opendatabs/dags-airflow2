@@ -7,39 +7,45 @@ This DAG pulls recent changes from the main/master branch of the following repos
 - [startercode-opendatabs](https://github.com/opendatabs/startercode-generator-bs)
 """
 
-from airflow import DAG
 from datetime import datetime, timedelta
+
+from airflow import DAG
+from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
-from airflow.models import Variable
 
-# This is set in the Airflow UI under Admin -> Variables
-https_proxy = Variable.get("https_proxy")
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
-    'owner': 'orhan.saeedi',
-    'description': 'Run git pull on multiple repositories',
-    'depend_on_past': False,
-    'start_date': datetime(2024, 4, 4),
-    'email': ["jonas.bieri@bs.ch", "orhan.saeedi@bs.ch", "rstam.aloush@bs.ch", "renato.farruggio@bs.ch"],
-    'email_on_failure': True,
-    'email_on_retry': False,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=15)
+    "owner": "orhan.saeedi",
+    "depend_on_past": False,
+    "start_date": datetime(2024, 4, 4),
+    "email": Variable.get("EMAIL_RECEIVERS"),
+    "email_on_failure": True,
+    "email_on_retry": False,
+    "retries": 0,
+    "retry_delay": timedelta(minutes=15),
 }
 
-with DAG('stata_pull_changes', default_args=default_args, schedule_interval=None, catchup=False) as dag:
+with DAG(
+    "stata_pull_changes",
+    description="Run git pull on multiple repositories",
+    default_args=default_args,
+    schedule_interval=None,
+    catchup=False,
+) as dag:
     dag.doc_md = __doc__
     git_pull = DockerOperator(
-        task_id='git_pull',
-        image='stata_pull_changes:latest',
-        api_version='auto',
-        auto_remove='force',
-        environment={'https_proxy': https_proxy},
-        command='/bin/bash /code/data-processing/stata_pull_changes/pull_changes.sh ',
-        container_name='stata_pull_changes',
+        task_id="git_pull",
+        image="ghcr.io/opendatabs/data-processing/stata_pull_changes:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        command="/bin/bash /code/data-processing/stata_pull_changes/pull_changes.sh ",
+        private_environment=COMMON_ENV_VARS,
+        container_name="stata_pull_changes",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[Mount(source="/data/dev/workspace", target="/code", type="bind")]
+        mounts=[Mount(source=PATH_TO_CODE, target="/code", type="bind")],
     )

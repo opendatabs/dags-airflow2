@@ -23,7 +23,6 @@ from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
-
 default_args = {
     "owner": "orhan.saeedi",
     "depend_on_past": False,
@@ -49,7 +48,8 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="python3 -m parlamentsdienst_grosserrat.etl",
+        command="uv run -m etl",
+        private_environment=COMMON_ENV_VARS,
         container_name="parlamentsdienst_grosserrat",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",

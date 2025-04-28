@@ -11,7 +11,6 @@ from docker.types import Mount
 
 default_args = {
     "owner": "orhan.saeedi",
-    "description": "Run the stata_konoer docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 11, 28),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -22,6 +21,7 @@ default_args = {
 }
 with DAG(
     "stata_konoer",
+    description="Run the stata_konoer docker container",
     default_args=default_args,
     schedule_interval="0 10 * * *",
     catchup=False,
@@ -100,4 +100,5 @@ with DAG(
         ],
     )
 
-    transform >> rsync_test >> rsync_prod
+    transform >> rsync_test
+    transform >> rsync_prod
