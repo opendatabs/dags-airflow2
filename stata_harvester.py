@@ -3,9 +3,17 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.python import ShortCircuitOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+
+def should_continue(**kwargs):
+    logs = kwargs['ti'].xcom_pull(task_ids="check_file_changed")
+    if "NO_FILES_CHANGED" in logs:
+        return False  # skip downstream
+    return True  # continue downstream
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -41,7 +49,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        do_xcom_push=False,
+        do_xcom_push=True,
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv",
@@ -54,8 +62,14 @@ with DAG(
                 type="bind",
             ),
         ],
-        skip_exit_code=99,
     )
+
+    gate = ShortCircuitOperator(
+        task_id="gate",
+        python_callable=should_continue,
+        provide_context=True,
+    )
+
 
     ods_harvest = DockerOperator(
         task_id="ods_harvest",
@@ -70,4 +84,4 @@ with DAG(
         tty=True,
     )
 
-    check_file_changed >> ods_harvest
+    check_file_changed >> gate >> ods_harvest
