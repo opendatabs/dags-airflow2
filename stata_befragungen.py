@@ -38,7 +38,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
-        privileged=COMMON_ENV_VARS,
+        private_environment=COMMON_ENV_VARS,
         container_name="stata_befragungen--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
