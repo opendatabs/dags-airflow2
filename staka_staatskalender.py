@@ -43,7 +43,9 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
-            "HTTPS_ACCESS_KEY_STAATSKALENDER": Variable.get("HTTPS_ACCESS_KEY_STAATSKALENDER"),
+            "HTTPS_ACCESS_KEY_STAATSKALENDER": Variable.get(
+                "HTTPS_ACCESS_KEY_STAATSKALENDER"
+            ),
         },
         container_name="staka_staatskalender",
         docker_url="unix://var/run/docker.sock",
