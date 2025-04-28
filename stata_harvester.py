@@ -36,7 +36,11 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
-        private_environment=COMMON_ENV_VARS,
+        private_environment={
+            **COMMON_ENV_VARS,
+            "FTP_USER_01": Variable.get("FTP_USER_01"),
+            "FTP_PASS_01": Variable.get("FTP_PASS_01"),
+        },
         container_name="stata_harvester",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
