@@ -41,7 +41,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        do_xcom_push=False,  # No need to push logs to XCom
+        do_xcom_push=False,
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/harvesters/StatA/ftp-csv",
@@ -54,6 +54,7 @@ with DAG(
                 type="bind",
             ),
         ],
+        skip_exit_code=99,
     )
 
     ods_harvest = DockerOperator(
