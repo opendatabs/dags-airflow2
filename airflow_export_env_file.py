@@ -52,7 +52,7 @@ with DAG(
         command="bash -c \"mkdir -p /opt/airflow/credentials && printenv | sort > /opt/airflow/credentials/.env && cat /opt/airflow/credentials/.env\"",
         docker_url="unix://var/run/docker.sock",
         network_mode="airflow_default",
-        environment=all_vars,
+        private_environment=all_vars,
         mounts=[
             Mount(
                 source=PATH_TO_CREDENTIALS,
