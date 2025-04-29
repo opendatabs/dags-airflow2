@@ -2,18 +2,19 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.python import ShortCircuitOperator
+from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 
 def should_continue(**kwargs):
-    logs = kwargs['ti'].xcom_pull(task_ids="check_file_changed")
+    logs = kwargs["ti"].xcom_pull(task_ids="check_file_changed")
     if "NO_FILES_CHANGED" in logs:
         return False  # skip downstream
     return True  # continue downstream
+
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -69,7 +70,6 @@ with DAG(
         python_callable=should_continue,
         provide_context=True,
     )
-
 
     ods_harvest = DockerOperator(
         task_id="ods_harvest",
