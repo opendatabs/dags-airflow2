@@ -44,7 +44,7 @@ full_command = f'bash -c "mkdir -p /opt/airflow/credentials && rm -f /opt/airflo
 with DAG(
     "airflow_export_variables",
     default_args=default_args,
-    description="DockerOperator to export only Airflow Variables into a .env file",
+    description="DockerOperator to export Airflow Variables into a .env file",
     schedule_interval=None,
     catchup=False,
 ) as dag:
