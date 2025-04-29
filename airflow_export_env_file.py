@@ -1,6 +1,6 @@
 """
 # airflow_export_variables
-This DAG exports all Airflow Variables into a .env file inside a mounted directory
+This DAG exports only Airflow Variables (not system env) into a .env file
 """
 
 from datetime import datetime, timedelta
@@ -16,7 +16,7 @@ PATH_TO_CREDENTIALS = Variable.get("PATH_TO_CREDENTIALS")
 
 # Open DB session to fetch all Variables
 session = Session()
-# Fetch all variables and EXCLUDE those starting with 'PATH_TO'
+# Fetch all Variables and exclude PATH_TO variables
 all_vars = {var.key: var.val for var in session.query(Variable).all() if not var.key.startswith("PATH_TO")}
 session.close()
 
@@ -33,11 +33,18 @@ default_args = {
     "email": Variable.get("EMAIL_RECEIVERS"),
 }
 
+# Build the command dynamically to echo only your Variables
+echo_commands = " && ".join(
+    [f'echo "{key}=\\"${key}\\"" >> /opt/airflow/credentials/.env' for key in all_vars.keys()]
+)
+
+full_command = f'bash -c "mkdir -p /opt/airflow/credentials && rm -f /opt/airflow/credentials/.env && {echo_commands} && cat /opt/airflow/credentials/.env"'
+
 # Define the DAG
 with DAG(
     "airflow_export_variables",
     default_args=default_args,
-    description="DockerOperator to export Airflow Variables into a .env file",
+    description="DockerOperator to export only Airflow Variables into a .env file",
     schedule_interval=None,
     catchup=False,
 ) as dag:
@@ -47,9 +54,9 @@ with DAG(
         image="apache/airflow:2.7.2",
         container_name="airflow_export_env_container",
         api_version="auto",
-        auto_remove="force",
-        user="0",
-        command="bash -c \"mkdir -p /opt/airflow/credentials && printenv | sort > /opt/airflow/credentials/.env && cat /opt/airflow/credentials/.env\"",
+        auto_remove=True,
+        user="0",  # Important for writing into mounted volume
+        command=full_command,
         docker_url="unix://var/run/docker.sock",
         network_mode="airflow_default",
         private_environment=all_vars,
