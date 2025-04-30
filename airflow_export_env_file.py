@@ -17,7 +17,12 @@ PATH_TO_CREDENTIALS = Variable.get("PATH_TO_CREDENTIALS")
 # Open DB session to fetch all Variables
 session = Session()
 # Fetch all Variables and exclude PATH_TO variables
-all_vars = {var.key: var.val for var in session.query(Variable).all() if not var.key.startswith("PATH_TO")}
+all_vars = {
+    var.key: var.val
+    for var in session.query(Variable).all()
+    if not var.key.startswith("PATH_TO")
+    and var.key not in {"http_proxy", "https_proxy"}
+}
 session.close()
 
 # Define default arguments for the DAG
