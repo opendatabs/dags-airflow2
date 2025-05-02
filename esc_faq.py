@@ -53,7 +53,7 @@ with DAG(
             ),
             Mount(
                 source="/mnt/OGD-DataExch/PD-ESC-FAQ/FAQs",
-                target="/code/data-processing/esc_faq/data_orig",
+                target="/code/data_orig",
                 type="bind",
             ),
             Mount(
