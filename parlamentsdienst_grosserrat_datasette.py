@@ -75,3 +75,5 @@ with DAG(
             Mount(source="/data/dev/workspace", target="/code", type="bind"),
         ],
     )
+
+    upload >> rsync
