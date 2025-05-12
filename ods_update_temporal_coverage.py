@@ -49,6 +49,11 @@ with DAG(
                 source=f"{PATH_TO_CODE}/data-processing/ods_update_temporal_coverage",
                 target="/code",
                 type="bind",
-            )
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/ods_update_temporal_coverage/.ods_utils_py.env",
+                target="/code/.ods_utils_py.env",
+                type="bind",
+            ),
         ],
     )
