@@ -26,7 +26,7 @@ with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
-    schedule_interval="*/15 * * * *",
+    schedule_interval="22 13 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
