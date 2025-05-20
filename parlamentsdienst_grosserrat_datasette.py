@@ -49,7 +49,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_datasette/data",
+                source=f"/mnt/OGD-DataExch/StatA/Parlament",
                 target="/code/data",
                 type="bind",
             ),
@@ -61,7 +61,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files parlamentsdienst_grosserra.json",
+        command="python3 -m rsync.sync_files parlamentsdienst_grosserrat.json",
         container_name="parlamentsdienst_grosserrat--rsync",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
