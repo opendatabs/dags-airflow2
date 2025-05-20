@@ -26,7 +26,7 @@ with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
-    schedule_interval=None,
+    schedule_interval="22 13 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -49,8 +49,13 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"/mnt/OGD-DataExch/StatA/Parlament",
+                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_datasette/data",
                 target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"/mnt/OGD-DataExch/StatA/Parlament/markdown",
+                target="/code/data/markdown",
                 type="bind",
             ),
         ],
@@ -61,7 +66,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files parlamentsdienst_grosserrat.json",
+        command="python3 -m rsync.sync_files parlamentsdienst_grosserra.json",
         container_name="parlamentsdienst_grosserrat--rsync",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
