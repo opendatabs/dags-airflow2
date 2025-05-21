@@ -43,6 +43,7 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
+            "ODS_PUSH_URL_100186": Variable.get("ODS_PUSH_URL_100186"),
             "FTP_SERVER_GR": Variable.get("FTP_SERVER_GR"),
             "FTP_USER_GR_TRAKT_LIST": Variable.get("FTP_USER_GR_TRAKT_LIST"),
             "FTP_PASS_GR_TRAKT_LIST": Variable.get("FTP_PASS_GR_TRAKT_LIST"),
