@@ -29,7 +29,7 @@ default_args = {
 }
 
 with DAG(
-    "stata_befragungen",
+    "stata_hunde",
     description="Run the stata_hunde docker container",
     default_args=default_args,
     schedule_interval="49 14 * * *",
