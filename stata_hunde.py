@@ -50,11 +50,6 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_hunde/change_tracking",
-                target="/code/change_tracking",
-                type="bind",
-            ),
-            Mount(
                 source="/mnt/OGD-DataExch/StatA/Hunde",
                 target="/code/data",
                 type="bind",
