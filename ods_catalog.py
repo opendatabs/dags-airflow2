@@ -49,7 +49,7 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source="/mnt/OGD-DataExch/StatA/FST-OGD",
+                source="/mnt/OGD-DataExch/StatA/opendatabs",
                 target="/code/data",
                 type="bind",
             ),
