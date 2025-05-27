@@ -52,12 +52,12 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data_processing/awa_feiertage/data",
+                source=f"{PATH_TO_CODE}/data-processing/awa_feiertage/data",
                 target="/code/data",
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data_processing/awa_feiertage/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/awa_feiertage/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
