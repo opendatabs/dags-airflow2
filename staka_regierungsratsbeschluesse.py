@@ -42,7 +42,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        command="uv run -m src.etl",
+        command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
         container_name="staka_regierungsratsbeschluesse",
         docker_url="unix://var/run/docker.sock",
