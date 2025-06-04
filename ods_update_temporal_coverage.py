@@ -33,7 +33,7 @@ with DAG(
 ) as dag:
     dag.doc_md = __doc__
     update = DockerOperator(
-        task_id="upload",
+        task_id="update",
         image="ghcr.io/opendatabs/data-processing/ods_update_temporal_coverage:latest",
         force_pull=True,
         api_version="auto",
@@ -44,7 +44,7 @@ with DAG(
             "ODS_DOMAIN": Variable.get("ODS_DOMAIN"),
             "ODS_API_TYPE": Variable.get("ODS_API_TYPE"),
         },
-        container_name="ods_update_temporal_coverage--upload",
+        container_name="ods_update_temporal_coverage--update",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
