@@ -39,7 +39,11 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
-        private_environment=COMMON_ENV_VARS,
+        private_environment={
+            **COMMON_ENV_VARS,
+            "ODS_DOMAIN": Variable.get("ODS_DOMAIN"),
+            "ODS_API_TYPE": Variable.get("ODS_API_TYPE"),
+        },
         container_name="update_temporal_coverage--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
