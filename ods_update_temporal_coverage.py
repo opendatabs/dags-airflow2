@@ -1,5 +1,5 @@
 """
-# stata_ods/daily_jobs/update_temporal_coverage
+# ods_update_temporal_coverage
 This DAG automatically updates the temporal coverage of all datasets
 
 """
@@ -26,7 +26,7 @@ default_args = {
 }
 
 with DAG(
-    "update_temporal_coverage",
+    "ods_update_temporal_coverage",
     default_args=default_args,
     schedule_interval="0 1 * * *",
     catchup=False,
@@ -44,7 +44,7 @@ with DAG(
             "ODS_DOMAIN": Variable.get("ODS_DOMAIN"),
             "ODS_API_TYPE": Variable.get("ODS_API_TYPE"),
         },
-        container_name="update_temporal_coverage--upload",
+        container_name="ods_update_temporal_coverage--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -52,11 +52,6 @@ with DAG(
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/ods_update_temporal_coverage",
                 target="/code",
-                type="bind",
-            ),
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing/ods_update_temporal_coverage/.ods_utils_py.env",
-                target="/code/.ods_utils_py.env",
                 type="bind",
             ),
         ],
