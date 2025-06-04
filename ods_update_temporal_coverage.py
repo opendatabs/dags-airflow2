@@ -32,7 +32,7 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload_bag_datasets = DockerOperator(
+    update = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/ods_update_temporal_coverage:latest",
         force_pull=True,
