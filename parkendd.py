@@ -9,12 +9,12 @@ This DAG updates the following datasets:
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.models import Variable
+from airflow.models import Variable, TaskInstance
 from airflow.operators.python import PythonOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 from airflow.exceptions import AirflowSkipException
-
+from airflow.utils.state import State
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 DAG_ID = "parkendd"
@@ -35,18 +35,18 @@ default_args = {
 
 def handle_docker_result(**context):
     ti = context["ti"]
-    task_instance = ti.xcom_pull(task_ids="run_docker")
-    exit_code = task_instance.get("ExitCode", 1)
+    previous_task_id = "run_docker"
 
-    count = int(Variable.get(FAILURE_VAR, default_var=0))
+    task_instance = context["dag"].get_task(previous_task_id)
+    prev_ti = TaskInstance(task_instance=task_instance, execution_date=ti.execution_date)
+    prev_ti.refresh_from_db()
 
-    if exit_code == 0:
+    if prev_ti.state == State.SUCCESS:
         Variable.set(FAILURE_VAR, 0)
     else:
-        count += 1
+        count = int(Variable.get(FAILURE_VAR, default_var=0)) + 1
         Variable.set(FAILURE_VAR, count)
-
-        if count >= FAILURE_THRESHOLD:
+        if count >= 6:
             raise Exception(f"Upload failed {count} times in a row — raising failure.")
         else:
             raise AirflowSkipException(f"Upload failed {count} times, skipping without error.")
