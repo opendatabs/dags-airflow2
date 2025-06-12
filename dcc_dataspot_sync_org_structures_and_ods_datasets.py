@@ -1,5 +1,5 @@
 """
-# dcc_dataspot_sync_combined
+# dcc_dataspot_sync_org_structures_and_ods_datasets
 """
 
 from datetime import datetime, timedelta
@@ -24,7 +24,7 @@ default_args = {
 }
 
 with DAG(
-    "dcc_dataspot_sync_combined",
+    "dcc_dataspot_sync_org_structures_and_ods_datasets",
     default_args=default_args,
     description="Run dataspot sync operations in sequence",
     schedule_interval="0 0 * * *",
@@ -80,4 +80,4 @@ with DAG(
     )
     
     # Set the task dependency
-    sync_org_structures >> sync_ods_datasets 
+    sync_org_structures >> sync_ods_datasets
