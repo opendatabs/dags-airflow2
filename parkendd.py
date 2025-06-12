@@ -38,7 +38,7 @@ def handle_docker_result(**context):
     previous_task_id = "run_docker"
 
     task_instance = context["dag"].get_task(previous_task_id)
-    prev_ti = TaskInstance(task_instance=task_instance, execution_date=ti.execution_date)
+    prev_ti = TaskInstance(task=task_instance, execution_date=ti.execution_date)
     prev_ti.refresh_from_db()
 
     if prev_ti.state == State.SUCCESS:
