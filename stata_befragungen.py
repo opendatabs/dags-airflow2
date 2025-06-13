@@ -74,13 +74,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[
-            Mount(
-                source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_OGD",
-                target="/code/data/55plus",
-                type="bind",
-            ),
-        ],
     )
 
     rsync = DockerOperator(
