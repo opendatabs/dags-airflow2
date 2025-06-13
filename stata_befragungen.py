@@ -76,8 +76,13 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data",
-                target="/code/data",
+                source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_OGD",
+                target="/code/data/55plus",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data/datasette",
+                target="/code/data/datasette",
                 type="bind",
             ),
         ],
