@@ -66,7 +66,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
-        command="python3 -m rsync.sync_files parlamentsdienst_grosserra.json",
+        command="python3 -m rsync.sync_files parlamentsdienst_grosserrat.json",
         container_name="parlamentsdienst_grosserrat--rsync",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
