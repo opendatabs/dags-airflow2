@@ -41,11 +41,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
-        private_environment={
-            **COMMON_ENV_VARS,
-            "ODS_PUSH_URL_100167": Variable.get("ODS_PUSH_URL_100167"),
-            "ODS_PUSH_URL_100187": Variable.get("ODS_PUSH_URL_100187"),
-        },
+        private_environment=COMMON_ENV_VARS,
         container_name="gd_coronavirus_abwassermonitoring--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
