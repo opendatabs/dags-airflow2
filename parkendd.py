@@ -41,19 +41,19 @@ def execute_docker_with_failure_tracking(**context):
     failure_count = int(Variable.get(FAILURE_VAR, default_var=0))
     
     try:
-        # Configure the Docker hook and parameters similar to DockerOperator
-        hook = DockerHook(
-            docker_conn_id='docker_default',
-            base_url='unix://var/run/docker.sock',
-        )
-        
-        # Configure container options
-        container = hook.client.containers.run(
+        # Use DockerOperator directly - it's the more reliable approach
+        docker_operator = DockerOperator(
+            task_id="docker_task",  # Internal task ID, not exposed
             image="ghcr.io/opendatabs/data-processing/parkendd:latest",
+            api_version="auto",
+            force_pull=True,
+            auto_remove="force",
             command="uv run -m etl",
-            environment=COMMON_ENV_VARS,
-            name="parkendd",
+            private_environment=COMMON_ENV_VARS,
+            container_name="parkendd",
+            docker_url="unix://var/run/docker.sock",
             network_mode="bridge",
+            tty=True,
             mounts=[
                 Mount(
                     source=f"{PATH_TO_CODE}/data-processing/parkendd/data",
@@ -66,43 +66,24 @@ def execute_docker_with_failure_tracking(**context):
                     type="bind",
                 ),
             ],
-            auto_remove=True,
-            detach=True
         )
         
-        # Stream logs and wait for completion
-        for line in container.logs(stream=True):
-            context['ti'].log.info(line.decode().strip())
+        # Execute the operator - it will raise an exception if the container exits non-zero
+        result = docker_operator.execute(context)
         
-        # Get exit code
-        result = container.wait()
-        exit_code = result['StatusCode']
+        # If we get here, execution was successful
+        Variable.set(FAILURE_VAR, 0)
+        return result
         
-        if exit_code == 0:
-            # Success - reset counter
-            Variable.set(FAILURE_VAR, 0)
-            return True
-        else:
-            # Failed - increment counter
-            failure_count += 1
-            Variable.set(FAILURE_VAR, failure_count)
-            
-            # Check threshold
-            if failure_count >= FAILURE_THRESHOLD:
-                raise Exception(f"Upload failed {failure_count} times in a row — raising failure.")
-            else:
-                # Skip without error
-                context['ti'].log.info(f"Upload failed {failure_count} times, skipping without error.")
-                # This is the key part - we'll mark this as skipped instead of failed
-                raise AirflowSkipException(f"Upload failed {failure_count} times, skipping without error.")
-    
     except Exception as e:
         if isinstance(e, AirflowSkipException):
             raise  # Re-raise skip exception
         
-        # For other exceptions, check if we should count it as a failure
+        # For other exceptions, count as a failure
         failure_count += 1
         Variable.set(FAILURE_VAR, failure_count)
+        
+        context['ti'].log.info(f"Docker execution failed: {str(e)}")
         
         if failure_count >= FAILURE_THRESHOLD:
             raise Exception(f"Upload failed {failure_count} times in a row: {str(e)}")
