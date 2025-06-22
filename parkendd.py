@@ -50,6 +50,12 @@ def execute_docker_with_failure_tracking(**context):
             auto_remove="force",
             command="uv run -m etl",
             private_environment=COMMON_ENV_VARS,
+            # TODO: For consistency, we should use separate push urls with encoded passkeys
+            #private_environment={
+            #    **COMMON_ENV_VARS,
+            #    "ODS_PUSH_URL_100014": Variable.get("ODS_PUSH_URL_100014"),
+            #    "ODS_PUSH_URL_100044": Variable.get("ODS_PUSH_URL_100044"),
+            #},
             container_name="parkendd",
             docker_url="unix://var/run/docker.sock",
             network_mode="bridge",
@@ -66,6 +72,7 @@ def execute_docker_with_failure_tracking(**context):
                     type="bind",
                 ),
             ],
+            execution_timeout=timedelta(minutes=30),
         )
         
         # Execute the operator - it will raise an exception if the container exits non-zero
