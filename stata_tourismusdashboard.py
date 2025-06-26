@@ -31,7 +31,7 @@ with DAG(
     "stata_tourismusdashboard",
     default_args=default_args,
     description="Run the stata_tourismusdashboard docker container",
-    schedule_interval="0 6-16/2 * * *",
+    schedule_interval="*/5 * * * *",
     catchup=False,
 ) as dag:
     embargo_docker_100413 = DockerOperator(
