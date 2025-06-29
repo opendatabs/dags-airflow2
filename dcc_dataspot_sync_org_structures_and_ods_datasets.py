@@ -64,7 +64,22 @@ with DAG(
         tty=True,
     )
     
-    # Second task: sync ODS datasets
+    # Second task: sync ODS dataset components
+    sync_ods_dataset_components = DockerOperator(
+        task_id="sync_ods_dataset_components",
+        image="ghcr.io/dcc-bs/dataspot:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        private_environment=dataspot_env,
+        command="python -m scripts.sync_ods_dataset_components",
+        container_name="dcc_dataspot_sync_ods_dataset_components",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
+
+    # Third task: sync ODS datasets
     sync_ods_datasets = DockerOperator(
         task_id="sync_ods_datasets",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -80,4 +95,4 @@ with DAG(
     )
     
     # Set the task dependency
-    sync_org_structures >> sync_ods_datasets
+    sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
