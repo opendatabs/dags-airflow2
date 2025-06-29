@@ -47,7 +47,6 @@ with DAG(
     execute_task = PythonOperator(
         task_id="run_docker",
         python_callable=execute_docker_with_failure_tracking,
-        provide_context=True,
         op_kwargs={
             "dag_id": DAG_ID,
             "task_id": "docker_task",

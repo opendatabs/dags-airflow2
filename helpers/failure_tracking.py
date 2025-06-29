@@ -13,8 +13,8 @@ def execute_docker_with_failure_tracking(
     task_id: str,
     failure_threshold: int,
     docker_operator_kwargs: Dict[str, Any],
-    context: Dict[str, Any],
     failure_var_name: Optional[str] = None,
+    **context
 ) -> Any:
     """
     Wrapper function that executes Docker container and handles failures with a threshold
@@ -24,8 +24,8 @@ def execute_docker_with_failure_tracking(
         task_id: Task identifier
         failure_threshold: Number of consecutive failures allowed before actually failing
         docker_operator_kwargs: Arguments to pass to the DockerOperator
-        context: The Airflow task context
         failure_var_name: Optional custom name for the failure variable
+        **context: The Airflow task context (automatically provided by Airflow)
     
     Returns:
         Result from the Docker execution
@@ -62,7 +62,10 @@ def execute_docker_with_failure_tracking(
         failure_count += 1
         Variable.set(failure_var, failure_count)
         
-        context['ti'].log.info(f"Docker execution failed: {str(e)}")
+        # Using ti (TaskInstance) from context 
+        ti = context.get('ti')
+        if ti:
+            ti.log.info(f"Docker execution failed: {str(e)}")
         
         if failure_count >= failure_threshold:
             raise Exception(f"Upload failed {failure_count} times in a row: {str(e)}")
