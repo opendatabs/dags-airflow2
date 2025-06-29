@@ -5,7 +5,7 @@ Utility module for handling failure tracking in DAGs.
 from airflow.models import Variable
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.docker.operators.docker import DockerOperator
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 
 def execute_docker_with_failure_tracking(
@@ -13,7 +13,6 @@ def execute_docker_with_failure_tracking(
     task_id: str,
     failure_threshold: int,
     docker_operator_kwargs: Dict[str, Any],
-    failure_var_name: Optional[str] = None,
     **context
 ) -> Any:
     """
@@ -24,7 +23,6 @@ def execute_docker_with_failure_tracking(
         task_id: Task identifier
         failure_threshold: Number of consecutive failures allowed before actually failing
         docker_operator_kwargs: Arguments to pass to the DockerOperator
-        failure_var_name: Optional custom name for the failure variable
         **context: The Airflow task context (automatically provided by Airflow)
     
     Returns:
@@ -34,8 +32,8 @@ def execute_docker_with_failure_tracking(
         AirflowSkipException: If failure count is under threshold
         Exception: If failure count exceeds threshold
     """
-    # Get or create failure variable name
-    failure_var = failure_var_name if failure_var_name else f"{dag_id}_consecutive_failures"
+    # Get failure variable name
+    failure_var = f"{dag_id}_consecutive_failures"
     
     # Get failure count
     failure_count = int(Variable.get(failure_var, default_var=0))
