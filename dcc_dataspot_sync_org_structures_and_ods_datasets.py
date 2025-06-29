@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.bash import BashOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
@@ -32,7 +33,18 @@ with DAG(
 ) as dag:
     dag.doc_md = __doc__
     
-    # Common environment variables for both tasks
+    # Cleanup task to remove any old containers at the beginning
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+        docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
+        docker system prune -f
+        ''',
+    )
+    
+    # Common environment variables for tasks
     dataspot_env = {
         **COMMON_ENV_VARS,
         "DATASPOT_EMAIL_RECEIVERS": Variable.get("DATASPOT_EMAIL_RECEIVERS"),
@@ -95,4 +107,4 @@ with DAG(
     )
     
     # Set the task dependency
-    sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
+    cleanup_containers >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
