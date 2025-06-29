@@ -40,7 +40,6 @@ with DAG(
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
-        docker system prune -f
         ''',
     )
     
