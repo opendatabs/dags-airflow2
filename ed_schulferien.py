@@ -44,7 +44,7 @@ with DAG(
             **COMMON_ENV_VARS,
             "ODS_PUSH_URL_100397": Variable.get("ODS_PUSH_URL_100397"),
         },
-        container_name="ed_schulferien--upload",
+        container_name="ed_schulferien",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
