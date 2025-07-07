@@ -55,7 +55,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/ed_schulferien/data_orig",
+                source="/mnt/OGD-DataExch/ED-Schulferien",
                 target="/code/data_orig",
                 type="bind",
             ),
