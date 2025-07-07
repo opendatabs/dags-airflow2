@@ -29,7 +29,7 @@ with DAG(
     "ed_schulferien",
     default_args=default_args,
     description="Run the ed_schulferien docker container",
-    schedule_interval="0 0 1 * *",
+    schedule_interval="0 3 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
