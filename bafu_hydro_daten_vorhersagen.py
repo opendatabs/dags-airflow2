@@ -10,10 +10,16 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "bafu_hydrodaten_vorhersagen"
+FAILURE_THRESHOLD = 3
+EXECUTION_TIMEOUT = timedelta(minutes=2)
+SCHEDULE = "0 * * * *"
 
 default_args = {
     "owner": "jonas.bieri",
@@ -27,38 +33,40 @@ default_args = {
 }
 
 with DAG(
-    "bafu_hydrodaten_vorhersagen",
+    dag_id=DAG_ID,
     default_args=default_args,
-    description="Run the bafu_hydrodaten_vorhersagen docker container",
-    schedule_interval="0 * * * *",
+    description=f"Run the {DAG_ID} docker container",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/bafu_hydrodaten_vorhersagen:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         private_environment={
             **COMMON_ENV_VARS,
             "DICT_URL_BAFU_VORHERSAGEN": Variable.get("DICT_URL_BAFU_VORHERSAGEN"),
             "HTTPS_USER_01": Variable.get("HTTPS_USER_01"),
             "HTTPS_PASS_01": Variable.get("HTTPS_PASS_01"),
         },
-        container_name="bafu_hydrodaten_vorhersagen",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/bafu_hydrodaten_vorhersagen/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/bafu_hydrodaten_vorhersagen/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
