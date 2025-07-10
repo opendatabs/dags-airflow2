@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
@@ -72,10 +73,8 @@ with DAG(
         ],
     )
 
-    ods_harvest = FailureTrackingDockerOperator(
+    ods_harvest = DockerOperator(
         task_id="ods-harvest",
-        failure_threshold=FAILURE_THRESHOLD,
-        execution_timeout=EXECUTION_TIMEOUT,
         image="ghcr.io/opendatabs/data-processing/ods_harvest:latest",
         api_version="auto",
         auto_remove="force",
@@ -85,6 +84,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        execution_timeout=EXECUTION_TIMEOUT,
     )
 
 upload >> ods_harvest
