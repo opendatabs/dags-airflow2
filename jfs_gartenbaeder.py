@@ -9,10 +9,16 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "jfs_gartenbaeder"
+FAILURE_THRESHOLD = 14
+EXECUTION_TIMEOUT = timedelta(minutes=2)
+SCHEDULE = "*/15 * * * *"
 
 default_args = {
     "owner": "rstam.aloush",
@@ -26,33 +32,35 @@ default_args = {
 }
 
 with DAG(
-    "jfs_gartenbaeder",
-    description="Run the jfs_gartenbaeder docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule_interval="*/15 * * * *",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/jfs_gartenbaeder:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         private_environment=COMMON_ENV_VARS,
         command="uv run -m etl",
-        container_name="jfs_gartenbaeder",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/jfs_gartenbaeder/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/jfs_gartenbaeder/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
