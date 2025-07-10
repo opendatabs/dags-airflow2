@@ -9,13 +9,20 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "fgi_geodatenshop"
+FAILURE_THRESHOLD = 2  # Skip first failure, fail ON the second
+EXECUTION_TIMEOUT = timedelta(minutes=90)
+SCHEDULE = "0 */2 * * *"
 
 default_args = {
     "owner": "rstam.aloush",
+    "description": f"Run the {DAG_ID} docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 9, 25),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -27,16 +34,18 @@ default_args = {
 
 
 with DAG(
-    "fgi_geodatenshop",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    description="Run the fgi_geodatenshop docker container",
-    schedule_interval="0 */2 * * *",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/fgi_geodatenshop:latest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
@@ -46,7 +55,7 @@ with DAG(
             "FTP_USER_01": Variable.get("FTP_USER_01"),
             "FTP_PASS_01": Variable.get("FTP_PASS_01"),
         },
-        container_name="fgi_geodatenshop",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -57,21 +66,23 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/fgi_geodatenshop/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
         ],
     )
 
-    ods_harvest = DockerOperator(
+    ods_harvest = FailureTrackingDockerOperator(
         task_id="ods-harvest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         image="ghcr.io/opendatabs/data-processing/ods_harvest:latest",
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl gva-gpkg-ftp-csv",
         private_environment=COMMON_ENV_VARS,
-        container_name="fgi_geodatenshop--ods_harvest",
+        container_name=f"{DAG_ID}--ods_harvest",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
