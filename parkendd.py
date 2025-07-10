@@ -18,7 +18,7 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 # DAG configuration
 DAG_ID = "parkendd"
 FAILURE_THRESHOLD = 5  # Skip first 5 failures, fail on the 6th failure
-EXECUTION_TIMEOUT = timedelta(minutes=30)
+EXECUTION_TIMEOUT = timedelta(minutes=2)
 SCHEDULE = "0 * * * *"
 
 default_args = {
