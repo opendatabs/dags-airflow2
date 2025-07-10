@@ -6,6 +6,7 @@ from airflow.models import Variable
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.docker.operators.docker import DockerOperator
 from typing import Dict, Any, Optional
+from datetime import timedelta
 
 
 class FailureTrackingDockerOperator(DockerOperator):
@@ -19,7 +20,8 @@ class FailureTrackingDockerOperator(DockerOperator):
     def __init__(
         self,
         *,
-        failure_threshold: int = 1,
+        failure_threshold: int,
+        execution_timeout: Optional[timedelta],
         **kwargs,
     ) -> None:
         """
@@ -30,9 +32,12 @@ class FailureTrackingDockerOperator(DockerOperator):
                                (1 = immediate failure with no skipping,
                                 2 = skip on first failure, fail on second,
                                 3 = skip on first and second failures, fail on third, etc.)
+            execution_timeout: Maximum time allowed for the execution of this task instance,
+                               expressed as a timedelta object, e.g. timedelta(minutes=30).
+                               Use None for no timeout.
             **kwargs: Arguments to pass to the parent DockerOperator
         """
-        super().__init__(**kwargs)
+        super().__init__(execution_timeout=execution_timeout, **kwargs)
         self.failure_threshold = failure_threshold
         
     def execute(self, context: Dict[str, Any]) -> Any:
