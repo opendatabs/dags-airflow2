@@ -57,7 +57,7 @@ class FailureTrackingDockerOperator(DockerOperator):
         # Get failure variable name
         dag_id = self.dag_id
         task_id = self.task_id
-        failure_var = f"{dag_id}_consecutive_failures"
+        failure_var = f"{dag_id}_{task_id}_consecutive_failures"
         
         # Get failure count
         failure_count = int(Variable.get(failure_var, default_var=0))
