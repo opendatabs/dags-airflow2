@@ -14,8 +14,8 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 # DAG configuration
 DAG_ID = "stata_daily_upload"
-FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
-EXECUTION_TIMEOUT = None  # No timeout
+FAILURE_THRESHOLD = 16
+EXECUTION_TIMEOUT = timedelta(minutes=2)
 SCHEDULE = "*/15 * * * *"
 
 default_args = {
