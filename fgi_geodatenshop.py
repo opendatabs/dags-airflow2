@@ -22,7 +22,6 @@ SCHEDULE = "0 */2 * * *"
 
 default_args = {
     "owner": "rstam.aloush",
-    "description": f"Run the {DAG_ID} docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 9, 25),
     "email": Variable.get("EMAIL_RECEIVERS"),

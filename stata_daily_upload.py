@@ -20,7 +20,6 @@ SCHEDULE = "*/15 * * * *"
 
 default_args = {
     "owner": "jonas.bieri",
-    "description": f"Run the {DAG_ID} docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 2, 2),
     "email": Variable.get("EMAIL_RECEIVERS"),
