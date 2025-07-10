@@ -10,18 +10,15 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.operators.python import PythonOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
-from helpers.failure_tracking import execute_docker_with_failure_tracking
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 # DAG configuration
 DAG_ID = "parkendd"
-FAILURE_THRESHOLD = 6  # fail on the 6th failure
+FAILURE_THRESHOLD = 6  # Skip first 5 failures, fail ON the 6th failure
 EXECUTION_TIMEOUT = timedelta(minutes=30)
-DOCKER_IMAGE = "ghcr.io/opendatabs/data-processing/parkendd:latest"
-COMMAND = "uv run -m etl"
 SCHEDULE = "0 * * * *"
 
 default_args = {
@@ -44,37 +41,30 @@ with DAG(
 ) as dag:
     dag.doc_md = __doc__
     
-    execute_task = PythonOperator(
+    execute_task = FailureTrackingDockerOperator(
         task_id="run_docker",
-        python_callable=execute_docker_with_failure_tracking,
-        op_kwargs={
-            "dag_id": DAG_ID,
-            "task_id": "docker_task",
-            "failure_threshold": FAILURE_THRESHOLD,
-            "docker_operator_kwargs": {
-                "image": DOCKER_IMAGE,
-                "api_version": "auto",
-                "force_pull": True,
-                "auto_remove": "force",
-                "command": COMMAND,
-                "private_environment": COMMON_ENV_VARS,
-                "container_name": DAG_ID,
-                "docker_url": "unix://var/run/docker.sock",
-                "network_mode": "bridge",
-                "tty": True,
-                "mounts": [
-                    Mount(
-                        source=f"{PATH_TO_CODE}/data-processing/parkendd/data",
-                        target="/code/data",
-                        type="bind",
-                    ),
-                    Mount(
-                        source=f"{PATH_TO_CODE}/data-processing/parkendd/change_tracking",
-                        target="/code/change_tracking",
-                        type="bind",
-                    ),
-                ],
-                "execution_timeout": EXECUTION_TIMEOUT,
-            }
-        }
+        failure_threshold=FAILURE_THRESHOLD,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        command="uv run -m etl",
+        private_environment=COMMON_ENV_VARS,
+        container_name=DAG_ID,
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
+                target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
+                target="/code/change_tracking",
+                type="bind",
+            ),
+        ],
+        execution_timeout=EXECUTION_TIMEOUT,
     )
