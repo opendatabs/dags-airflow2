@@ -7,13 +7,20 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "stata_daily_upload"
+FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
+EXECUTION_TIMEOUT = None  # No timeout
+SCHEDULE = "*/15 * * * *"
 
 default_args = {
     "owner": "jonas.bieri",
+    "description": f"Run the {DAG_ID} docker container",
     "depend_on_past": False,
     "start_date": datetime(2024, 2, 2),
     "email": Variable.get("EMAIL_RECEIVERS"),
@@ -24,22 +31,24 @@ default_args = {
 }
 
 with DAG(
-    "stata_daily_upload",
-    description="Run the stata_daily_upload docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule_interval="*/15 * * * *",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/stata_daily_upload:latest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="stata_daily_upload",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -50,7 +59,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/stata_daily_upload/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
