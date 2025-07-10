@@ -28,10 +28,10 @@ class FailureTrackingDockerOperator(DockerOperator):
         Initialize the FailureTrackingDockerOperator.
         
         Args:
-            failure_threshold: Number of failures at which the task will fail
-                               (1 = immediate failure with no skipping,
-                                2 = skip on first failure, fail on second,
-                                3 = skip on first and second failures, fail on third, etc.)
+            failure_threshold: Number of failures to tolerate before failing
+                               (0 = immediate failure with no skipping,
+                                1 = skip on first failure, fail on second,
+                                2 = skip on first and second failures, fail on third, etc.)
             execution_timeout: Maximum time allowed for the execution of this task instance,
                                expressed as a timedelta object, e.g. timedelta(minutes=30).
                                Use None for no timeout.
@@ -80,8 +80,8 @@ class FailureTrackingDockerOperator(DockerOperator):
             
             self.log.info(f"Docker execution failed: {str(e)}")
             
-            # Task fails ON the Nth failure (when count reaches threshold)
-            if failure_count >= self.failure_threshold:
+            # Task fails when count exceeds threshold
+            if failure_count > self.failure_threshold:
                 raise Exception(f"Upload failed {failure_count} times in a row: {str(e)}")
             else:
-                raise AirflowSkipException(f"Upload failed {failure_count} times, skipping task: {str(e)}") 
+                raise AirflowSkipException(f"Upload failed {failure_count} times, skipping task: {str(e)}")

@@ -16,7 +16,7 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 # DAG configuration
 DAG_ID = "fgi_geodatenshop"
-FAILURE_THRESHOLD = 2  # Skip first failure, fail ON the second
+FAILURE_THRESHOLD = 1  # Skip first failure, fail on second
 EXECUTION_TIMEOUT = timedelta(minutes=90)
 SCHEDULE = "0 */2 * * *"
 
