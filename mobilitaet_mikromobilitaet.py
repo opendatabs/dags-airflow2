@@ -11,10 +11,16 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.models.dagrun import DagRun
 from airflow.operators.python import PythonOperator
-from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "mobilitaet_mikromobilitaet"
+FAILURE_THRESHOLD = 3
+EXECUTION_TIMEOUT = timedelta(minutes=5)
+SCHEDULE = "*/10 * * * *"
 
 
 def check_manual_triggering(**context):
@@ -39,10 +45,10 @@ default_args = {
 }
 
 with DAG(
-    "mobilitaet_mikromobilitaet",
-    description="Run the mobilitaet_mikromobilitaet docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule_interval="*/10 * * * *",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -52,18 +58,20 @@ with DAG(
         python_callable=check_manual_triggering,
     )
 
-    process_upload = DockerOperator(
+    process_upload = FailureTrackingDockerOperator(
         task_id="process-upload",
-        image="ghcr.io/opendatabs/data-processing/mobilitaet_mikromobilitaet:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="mobilitaet_mikromobilitaet",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/BVD-MOB/Mikromobilitaet",
