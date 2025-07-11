@@ -46,6 +46,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        mount_tmp_dir=False,
         mounts=[
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/kapo_smileys/data",
@@ -75,6 +76,7 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        mount_tmp_dir=False,
         mounts=[
             Mount(
                 source="/home/syncuser/.ssh/id_rsa",
