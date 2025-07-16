@@ -3,6 +3,7 @@
 This DAG updates the following datasets:
 
 - [100352](https://data.bs.ch/explore/dataset/100352)
+- [100366](https://data.bs.ch/explore/dataset/100366)
 """
 
 import time
