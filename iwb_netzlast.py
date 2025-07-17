@@ -11,14 +11,12 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
-from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 # DAG configuration
 DAG_ID = "iwb_netzlast"
-FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
 EXECUTION_TIMEOUT = timedelta(minutes=50)
 SCHEDULE = "0 * * * *"
 
@@ -41,7 +39,7 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = FailureTrackingDockerOperator(
+    upload = DockerOperator(
         task_id="upload",
         image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
@@ -53,7 +51,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        failure_threshold=FAILURE_THRESHOLD,
         execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
