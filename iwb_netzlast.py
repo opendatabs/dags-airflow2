@@ -11,9 +11,16 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "iwb_netzlast"
+FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
+EXECUTION_TIMEOUT = timedelta(minutes=50)
+SCHEDULE = "0 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -27,25 +34,27 @@ default_args = {
 }
 
 with DAG(
-    "iwb_netzlast",
+    dag_id=DAG_ID,
     default_args=default_args,
-    description="Run the iwb_netzlast docker container",
-    schedule_interval="0 * * * *",
+    description=f"Run the {DAG_ID} docker container",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/iwb_netzlast:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="iwb_netzlast--upload",
+        container_name=f"{DAG_ID}--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/IWB/Netzlast",
@@ -53,7 +62,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/iwb_netzlast/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
@@ -66,7 +75,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         command="Rscript /code/data-processing/stata_erwarteter_stromverbrauch/Stromverbrauch_OGD.R",
-        container_name="stromverbrauch--fit_model",
+        container_name=f"{DAG_ID}--fit_model",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
