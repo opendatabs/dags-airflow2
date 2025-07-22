@@ -83,7 +83,7 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "API_KEY_MAPBS": Variable.get("API_KEY_MAPBS")
-        }
+        },
         container_name="staka_baupublikationen",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
