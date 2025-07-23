@@ -58,6 +58,11 @@ with DAG(
                 target="/code/data/markdown",
                 type="bind",
             ),
+            Mount(
+                source=f"/mnt/OGD-DataExch/StatA/Parlament/text",
+                target="/code/data/text",
+                type="bind",
+            ),
         ],
     )
 
