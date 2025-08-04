@@ -17,7 +17,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 # DAG configuration
 DAG_ID = "bafu_hydrodaten_vorhersagen"
-FAILURE_THRESHOLD = 3
+FAILURE_THRESHOLD = 5
 EXECUTION_TIMEOUT = timedelta(minutes=2)
 SCHEDULE = "0 * * * *"
 
