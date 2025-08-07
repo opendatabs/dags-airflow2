@@ -8,10 +8,8 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.bash import BashOperator
-from docker.types import Mount
-import os
 
-from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from common_variables import COMMON_ENV_VARS
 
 default_args = {
     "owner": "renato.farruggio",
@@ -45,14 +43,6 @@ with DAG(
         ''',
     )
     
-    # Define mount points for reports directory
-    reports_mount = Mount(
-        target="/app/reports",
-        source=os.path.join(PATH_TO_CODE, "dataspot", "reports"),
-        type="bind",
-        read_only=False
-    )
-    
     # Common environment variables for tasks
     dataspot_env = {
         **COMMON_ENV_VARS,
@@ -84,7 +74,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[reports_mount],
     )
     
     # Second task: sync organization structures
@@ -100,7 +89,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[reports_mount],
     )
     
     # Third task: sync ODS dataset components
@@ -116,7 +104,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[reports_mount],
     )
 
     # Fourth task: sync ODS datasets
@@ -132,7 +119,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mounts=[reports_mount],
     )
     
     # Set the task dependency
