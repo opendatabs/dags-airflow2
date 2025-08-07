@@ -37,6 +37,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
+        docker rm -f dcc_dataspot_daily_checks 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
@@ -60,7 +61,22 @@ with DAG(
         "ODS_API_TYPE": Variable.get("ODS_API_TYPE")
     }
     
-    # First task: sync organization structures
+    # First task: ensure catalog quality as defined in dataspot
+    daily_checks = DockerOperator(
+        task_id="daily_checks",
+        image="ghcr.io/dcc-bs/dataspot:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        private_environment=dataspot_env,
+        command="python -m scripts.catalog_quality_daily.daily_checks__combined",
+        container_name="dcc_dataspot_daily_checks",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
+    
+    # Second task: sync organization structures
     sync_org_structures = DockerOperator(
         task_id="sync_org_structures",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -75,7 +91,7 @@ with DAG(
         tty=True,
     )
     
-    # Second task: sync ODS dataset components
+    # Third task: sync ODS dataset components
     sync_ods_dataset_components = DockerOperator(
         task_id="sync_ods_dataset_components",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -90,7 +106,7 @@ with DAG(
         tty=True,
     )
 
-    # Third task: sync ODS datasets
+    # Fourth task: sync ODS datasets
     sync_ods_datasets = DockerOperator(
         task_id="sync_ods_datasets",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -98,7 +114,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         private_environment=dataspot_env,
-        command="python -m scripts.sync_ods_datasets",
+        command="python -m scripts.dataspot.sync_ods_datasets",
         container_name="dcc_dataspot_sync_ods_datasets",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -106,4 +122,4 @@ with DAG(
     )
     
     # Set the task dependency
-    cleanup_containers >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
+    cleanup_containers >> daily_checks >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
