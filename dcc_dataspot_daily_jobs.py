@@ -18,7 +18,7 @@ default_args = {
     "description": "Run dataspot sync operations in sequence",
     "depends_on_past": False,
     "start_date": datetime(2025, 6, 5),
-    "email": Variable.get("DATASPOT_EMAIL_RECEIVERS"),
+    "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
     "retries": 0,
