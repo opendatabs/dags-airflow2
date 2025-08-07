@@ -26,7 +26,7 @@ default_args = {
 }
 
 with DAG(
-    "dcc_dataspot_sync_org_structures_and_ods_datasets",
+    "dcc_dataspot_daily_jobs",
     default_args=default_args,
     description="Run dataspot sync operations in sequence",
     schedule_interval="0 3 * * *",
@@ -38,7 +38,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
-        docker rm -f dcc_dataspot_daily_checks 2>/dev/null || true
+        docker rm -f dcc_dataspot_catalog_quality_daily 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
@@ -72,15 +72,15 @@ with DAG(
     }
     
     # First task: ensure catalog quality as defined in dataspot
-    daily_checks = DockerOperator(
-        task_id="daily_checks",
+    catalog_quality_daily = DockerOperator(
+        task_id="catalog_quality_daily",
         image="ghcr.io/dcc-bs/dataspot:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         private_environment=dataspot_env,
-        command="python -m scripts.catalog_quality_daily.daily_checks__combined",
-        container_name="dcc_dataspot_daily_checks",
+        command="python -m scripts.catalog_quality_daily.catalog_quality_daily__combined",
+        container_name="dcc_dataspot_catalog_quality_daily",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -136,4 +136,4 @@ with DAG(
     )
     
     # Set the task dependency
-    cleanup_containers >> daily_checks >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
+    cleanup_containers >> catalog_quality_daily >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
