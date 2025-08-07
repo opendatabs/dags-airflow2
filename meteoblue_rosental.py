@@ -29,7 +29,7 @@ with DAG(
     "meteoblue_rosental",
     default_args=default_args,
     description="Run the meteoblue_rosental docker container",
-    schedule_interval="45 * * * *",
+    schedule="45 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

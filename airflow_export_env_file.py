@@ -50,7 +50,7 @@ with DAG(
     "airflow_export_variables",
     default_args=default_args,
     description="DockerOperator to export Airflow Variables into a .env file",
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
 

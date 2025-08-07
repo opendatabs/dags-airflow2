@@ -30,7 +30,7 @@ with DAG(
     "ibs_parkhaus_bewegungen",
     default_args=default_args,
     description="run the ibs_parkhaus_bewegungen docker container",
-    schedule_interval="0 1 * * *",
+    schedule="0 1 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

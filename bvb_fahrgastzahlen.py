@@ -29,7 +29,7 @@ with DAG(
     "bvb_fahrgastzahlen",
     default_args=default_args,
     description="Run the bvb_fahrgastzahlen docker container",
-    schedule_interval="*/30 * * * *",
+    schedule="*/30 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

@@ -35,7 +35,7 @@ with DAG(
     dag_id=DAG_ID,
     default_args=default_args,
     description=f"Run the {DAG_ID} docker container",
-    schedule_interval=SCHEDULE,
+    schedule=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

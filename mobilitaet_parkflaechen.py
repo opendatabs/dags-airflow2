@@ -29,7 +29,7 @@ with DAG(
     "mobilitaet_parkflaechen",
     description="Run the mobilitaet-parkflaechen docker container",
     default_args=default_args,
-    schedule_interval="0 0 * * *",
+    schedule="0 0 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

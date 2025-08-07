@@ -32,7 +32,7 @@ with DAG(
     "staka_kantonsblatt",
     default_args=default_args,
     description="Run the staka_kantonsblatt and staka_baupublikationen docker container",
-    schedule_interval="30 0 * * *",
+    schedule="30 0 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

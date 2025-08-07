@@ -30,7 +30,7 @@ with DAG(
     "airflow_db_cleanup",
     default_args=default_args,
     description="DockerOperator to clean up old Airflow task runs and logs",
-    schedule_interval="0 0 * * *",
+    schedule="0 0 * * *",
     catchup=False,
 ) as dag:
     # DockerOperator to run the db cleanup command

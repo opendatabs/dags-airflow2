@@ -33,7 +33,7 @@ with DAG(
     "kapo_geschwindigkeitsmonitoring",
     description="Run the kapo_geschwindigkeitsmonitoring docker container",
     default_args=default_args,
-    schedule_interval="0 2 * * *",
+    schedule="0 2 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

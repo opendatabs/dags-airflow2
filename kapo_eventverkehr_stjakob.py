@@ -30,7 +30,7 @@ with DAG(
     "kapo_eventverkehr_stjakob",
     default_args=default_args,
     description="Run the kapo_eventverkehr_stjakob docker container",
-    schedule_interval="*/5 * * * *",
+    schedule="*/5 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

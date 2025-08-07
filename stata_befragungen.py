@@ -27,7 +27,7 @@ with DAG(
     "stata_befragungen",
     description="Run the stata_befragungen docker container",
     default_args=default_args,
-    schedule_interval="5,35 * * * *",
+    schedule="5,35 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

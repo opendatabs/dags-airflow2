@@ -29,7 +29,7 @@ with DAG(
     "stadtreinigung_wildedeponien",
     description="Run the stadtreinigung_wildedeponien docker container",
     default_args=default_args,
-    schedule_interval="0 7,14 * * *",
+    schedule="0 7,14 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

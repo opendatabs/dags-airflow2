@@ -22,7 +22,7 @@ with DAG(
     "gva_geodatenshop",
     default_args=default_args,
     description="Run the gva-geodatenshop docker container",
-    schedule_interval="0 5 * * *",
+    schedule="0 5 * * *",
     catchup=False,
 ) as dag:
     process_upload = DockerOperator(

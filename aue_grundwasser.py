@@ -32,7 +32,7 @@ with DAG(
     "aue_grundwasser",
     description="Run the aue_grundwasser docker container",
     default_args=default_args,
-    schedule_interval="25 5 * * *",
+    schedule="25 5 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

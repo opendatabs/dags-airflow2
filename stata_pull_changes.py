@@ -31,7 +31,7 @@ with DAG(
     "stata_pull_changes",
     description="Run git pull on multiple repositories",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

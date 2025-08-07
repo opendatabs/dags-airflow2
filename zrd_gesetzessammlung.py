@@ -30,7 +30,7 @@ with DAG(
     "zrd_gesetzessammlung",
     description="Run zrd_gesetzessammlung docker container",
     default_args=default_args,
-    schedule_interval="0 8/12 * * *",
+    schedule="0 8/12 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

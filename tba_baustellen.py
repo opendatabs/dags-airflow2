@@ -29,7 +29,7 @@ with DAG(
     "tba_baustellen",
     description="Run the tba_baustellen docker container",
     default_args=default_args,
-    schedule_interval="0 * * * *",
+    schedule="0 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

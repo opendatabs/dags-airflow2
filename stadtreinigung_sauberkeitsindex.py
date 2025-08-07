@@ -29,7 +29,7 @@ with DAG(
     "stadtreinigung_sauberkeitsindex",
     description="Run the stadtreinigung_sauberkeitsindex",
     default_args=default_args,
-    schedule_interval="0 7,14 * * *",
+    schedule="0 7,14 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

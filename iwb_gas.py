@@ -31,7 +31,7 @@ with DAG(
     "iwb_gas",
     default_args=default_args,
     description="Run the iwb_gas docker container",
-    schedule_interval="0 13 * * *",
+    schedule="0 13 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

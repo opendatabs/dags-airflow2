@@ -30,7 +30,7 @@ with DAG(
     "gd_coronavirus_abwassermonitoring",
     default_args=default_args,
     description="Run the gd_coronavirus_abwassermonitoring docker container",
-    schedule_interval="0 * * * *",
+    schedule="0 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

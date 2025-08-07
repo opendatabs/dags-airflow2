@@ -30,7 +30,7 @@ with DAG(
     "meteoblue_wolf",
     default_args=default_args,
     description="Run the meteoblue_wolf docker container",
-    schedule_interval="10 * * * *",
+    schedule="10 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

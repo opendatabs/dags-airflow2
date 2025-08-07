@@ -30,7 +30,7 @@ with DAG(
     "parlamentsdienst_gr_abstimmungen",
     default_args=default_args,
     description="Run the parlamentsdienst_gr_abstimmungen docker container",
-    schedule_interval="*/2 * * * *",
+    schedule="*/2 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

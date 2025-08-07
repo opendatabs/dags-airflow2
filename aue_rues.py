@@ -30,7 +30,7 @@ with DAG(
     "aue_rues",
     description="Run the aue_rues docker container",
     default_args=default_args,
-    schedule_interval="*/10 * * * *",
+    schedule="*/10 * * * *",
     catchup=False,
     dagrun_timeout=timedelta(minutes=8),
 ) as dag:

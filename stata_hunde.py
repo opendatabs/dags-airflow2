@@ -32,7 +32,7 @@ with DAG(
     "stata_hunde",
     description="Run the stata_hunde docker container",
     default_args=default_args,
-    schedule_interval="49 14 * * *",
+    schedule="49 14 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

@@ -30,7 +30,7 @@ with DAG(
     "itbs_klv",
     default_args=default_args,
     description="Run the itbs_klv docker container",
-    schedule_interval="0 */2 * * *",
+    schedule="0 */2 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

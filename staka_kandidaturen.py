@@ -32,7 +32,7 @@ with DAG(
     "staka_kandidaturen",
     description="Run the staka_kandidaturen.py docker container",
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

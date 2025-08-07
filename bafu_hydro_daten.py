@@ -29,7 +29,7 @@ with DAG(
     "bafu_hydro_daten",
     description="Run the bafu_hydrodaten docker container",
     default_args=default_args,
-    schedule_interval="*/5 * * * *",
+    schedule="*/5 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

@@ -23,7 +23,7 @@ with DAG(
     "stata_konoer",
     description="Run the stata_konoer docker container",
     default_args=default_args,
-    schedule_interval="0 10 * * *",
+    schedule="0 10 * * *",
     catchup=False,
 ) as dag:
     transform = DockerOperator(

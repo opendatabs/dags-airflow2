@@ -29,7 +29,7 @@ with DAG(
     "lufthygiene_rosental",
     default_args=default_args,
     description="Run the lufthygiene_rosental docker container",
-    schedule_interval="*/30 * * * *",
+    schedule="*/30 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

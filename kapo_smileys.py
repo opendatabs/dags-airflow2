@@ -30,7 +30,7 @@ with DAG(
     "kapo_smileys",
     default_args=default_args,
     description="Run kapo_smileys docker container",
-    schedule_interval="15 3 * * *",
+    schedule="15 3 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

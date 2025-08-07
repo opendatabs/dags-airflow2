@@ -29,7 +29,7 @@ with DAG(
     "euroairport",
     default_args=default_args,
     description="Run the euroairport docker container",
-    schedule_interval="*/15 5-8 * * *",
+    schedule="*/15 5-8 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

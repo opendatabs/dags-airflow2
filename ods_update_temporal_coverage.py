@@ -28,7 +28,7 @@ default_args = {
 with DAG(
     "ods_update_temporal_coverage",
     default_args=default_args,
-    schedule_interval="0 1 * * *",
+    schedule="0 1 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

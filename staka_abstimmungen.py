@@ -30,7 +30,7 @@ with DAG(
     "staka_abstimmungen",
     description="Run the staka_abstimmungen docker container",
     default_args=default_args,
-    schedule_interval="*/2 9-19 * * 7",
+    schedule="*/2 9-19 * * 7",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

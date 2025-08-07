@@ -30,7 +30,7 @@ with DAG(
     "zefix_handelsregister",
     description="Run the zefix-handelsregister docker container",
     default_args=default_args,
-    schedule_interval="0 0 * * *",
+    schedule="0 0 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

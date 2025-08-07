@@ -28,7 +28,7 @@ with DAG(
     "smarte_strasse_ladestation",
     description="Run the smarte_strasse_ladestation docker container",
     default_args=default_args,
-    schedule_interval="*/15 * * * *",
+    schedule="*/15 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

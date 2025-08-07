@@ -31,7 +31,7 @@ with DAG(
     "luftqualitaet_ch",
     default_args=default_args,
     description="Run the luftqualitaet_ch docker container",
-    schedule_interval="15 * * * *",
+    schedule="15 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

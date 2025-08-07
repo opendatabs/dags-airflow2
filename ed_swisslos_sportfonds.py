@@ -29,7 +29,7 @@ with DAG(
     "ed_swisslos_sportfonds",
     default_args=default_args,
     description="Run the ed_swisslos_sportfonds docker container",
-    schedule_interval="0 2 * * *",
+    schedule="0 2 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

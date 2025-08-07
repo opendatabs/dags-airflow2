@@ -29,7 +29,7 @@ with DAG(
     "awa_feiertage",
     description="Run the awa_feiertage docker container",
     default_args=default_args,
-    schedule_interval="49 14 * * *",
+    schedule="49 14 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

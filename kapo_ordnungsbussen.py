@@ -29,7 +29,7 @@ with DAG(
     "kapo_ordnungsbussen",
     default_args=default_args,
     description="Run the kapo_ordnungsbussen docker container",
-    schedule_interval="0 11 * * *",
+    schedule="0 11 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

@@ -31,7 +31,7 @@ with DAG(
     "ods_catalog",
     default_args=default_args,
     description="Run the ods_catalog docker container",
-    schedule_interval="3 * * * *",
+    schedule="3 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

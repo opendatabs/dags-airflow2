@@ -29,7 +29,7 @@ with DAG(
     "tba_wiese",
     description="Run the tba_wiese docker container",
     default_args=default_args,
-    schedule_interval="30 * * * *",
+    schedule="30 * * * *",
     catchup=False,
     dagrun_timeout=timedelta(minutes=50),
 ) as dag:

@@ -31,7 +31,7 @@ with DAG(
     "stata_gwr",
     description="Run the stata_gwr docker container",
     default_args=default_args,
-    schedule_interval="25 * * * *",
+    schedule="25 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

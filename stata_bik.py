@@ -29,7 +29,7 @@ with DAG(
     "stata_bik",
     description="Run the stata_bik docker container",
     default_args=default_args,
-    schedule_interval="*/15 * * * *",
+    schedule="*/15 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

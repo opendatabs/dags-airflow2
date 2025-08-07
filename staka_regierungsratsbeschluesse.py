@@ -32,7 +32,7 @@ with DAG(
     "staka_regierungsratsbeschluesse",
     description="Run the staka_regierungsratsbeschluesse docker container",
     default_args=default_args,
-    schedule_interval="*/5 * * * 2,3",
+    schedule="*/5 * * * 2,3",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

@@ -31,7 +31,7 @@ with DAG(
     "mobilitaet_mikromobilitaet_stats",
     description="Run the mobilitaet_mikromobilitaet_stats",
     default_args=default_args,
-    schedule_interval="0 4 * * *",
+    schedule="0 4 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

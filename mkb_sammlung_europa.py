@@ -30,7 +30,7 @@ with DAG(
     "mkb_sammlung_europa",
     default_args=default_args,
     description="Run the mkb_sammlung_europa docker container",
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

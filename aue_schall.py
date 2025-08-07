@@ -29,7 +29,7 @@ with DAG(
     "aue_schall",
     description="Run the aue_schall docker container",
     default_args=default_args,
-    schedule_interval="*/15 * * * *",
+    schedule="*/15 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

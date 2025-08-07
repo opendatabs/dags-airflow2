@@ -29,7 +29,7 @@ with DAG(
     "dcc_dataspot_daily_jobs",
     default_args=default_args,
     description="Run dataspot sync operations in sequence",
-    schedule_interval="0 3 * * *",
+    schedule="0 3 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__

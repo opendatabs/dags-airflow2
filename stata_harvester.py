@@ -32,7 +32,7 @@ with DAG(
     description="Run the stata_harvester docker container",
     default_args=default_args,
     catchup=False,
-    schedule_interval="*/5 * * * *",
+    schedule="*/5 * * * *",
 ) as dag:
     check_file_changed = DockerOperator(
         task_id="check_file_changed",
