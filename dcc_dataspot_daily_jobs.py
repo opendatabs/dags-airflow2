@@ -16,7 +16,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 default_args = {
     "owner": "renato.farruggio",
     "description": "Run dataspot sync operations in sequence",
-    "depend_on_past": False,
+    "depends_on_past": False,
     "start_date": datetime(2025, 6, 5),
     "email": Variable.get("DATASPOT_EMAIL_RECEIVERS"),
     "email_on_failure": True,
