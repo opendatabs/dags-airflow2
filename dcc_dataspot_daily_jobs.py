@@ -69,7 +69,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         private_environment=dataspot_env,
-        command="python -m scripts.catalog_quality_daily.catalog_quality_daily__combined",
+        command="python -m scripts.catalog_quality_daily.daily_checks__combined",
         container_name="dcc_dataspot_catalog_quality_daily",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
