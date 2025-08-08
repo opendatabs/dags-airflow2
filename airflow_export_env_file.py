@@ -60,7 +60,6 @@ with DAG(
         container_name="airflow_export_env_container",
         api_version="auto",
         auto_remove="force",
-        mnt_tmp_dir=False,
         user="0",  # Important for writing into mounted volume
         command=full_command,
         docker_url="unix://var/run/docker.sock",
