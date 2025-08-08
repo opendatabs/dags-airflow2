@@ -43,6 +43,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mount_tmp_dir=False,
         private_environment={
             **COMMON_ENV_VARS,
             "PG_CONNECTION": Variable.get("PG_CONNECTION"),
@@ -77,6 +78,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
+        mount_tmp_dir=False,
         command="python3 -m rsync.sync_files kapo_geschwindigkeitsmonitoring.json",
         container_name="kapo_geschwindigkeitsmonitoring--rsync",
         docker_url="unix://var/run/docker.sock",

@@ -41,6 +41,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mount_tmp_dir=False,
         command="/bin/bash /code/data-processing/stata_pull_changes/pull_changes.sh ",
         private_environment=COMMON_ENV_VARS,
         container_name="stata_pull_changes",
