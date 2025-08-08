@@ -78,7 +78,6 @@ with DAG(
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
-        mount_tmp_dir=False,
         mounts=[
             Mount(
                 source="/home/syncuser/.ssh/id_rsa",
