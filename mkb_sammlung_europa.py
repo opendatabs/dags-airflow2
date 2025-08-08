@@ -40,7 +40,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mnt_tmo_dir=False,
+        mnt_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
         container_name="mkb_sammlung_europa--upload",
