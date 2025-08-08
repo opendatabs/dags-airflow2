@@ -46,6 +46,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mnt_tmo_dir=False,
         command="uv run -m etl",
         failure_threshold=FAILURE_THRESHOLD,
         execution_timeout=EXECUTION_TIMEOUT,

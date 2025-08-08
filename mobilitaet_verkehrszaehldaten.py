@@ -41,6 +41,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mnt_tmo_dir=False,
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
@@ -76,6 +77,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mnt_tmo_dir=False,
         command="uv run -m etl_id 100006,100013,100356",
         private_environment=COMMON_ENV_VARS,
         container_name="mobilitaet_verkehrszaehldaten--ods_publish",
@@ -89,6 +91,7 @@ with DAG(
         image="rsync:latest",
         api_version="auto",
         auto_remove="force",
+        mnt_tmo_dir=False,
         command="python3 -m rsync.sync_files mobilitaet_verkehrszaehldaten.json",
         container_name="mobilitaet_verkehrszaehldaten--rsync",
         docker_url="unix://var/run/docker.sock",

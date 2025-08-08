@@ -37,6 +37,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mnt_tmo_dir=False,
         private_environment={
             **COMMON_ENV_VARS,
             "DATASPOT_EDITOR_USERNAME": Variable.get("DATASPOT_EDITOR_USERNAME"),
