@@ -40,7 +40,6 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mnt_tmp_dir=False,
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
@@ -68,7 +67,6 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mnt_tmp_dir=False,
         command="uv run -m etl_id 100009,100082",
         private_environment=COMMON_ENV_VARS,
         container_name="meteoblue_wolf--ods_publish",

@@ -45,7 +45,6 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mnt_tmp_dir=False,
         private_environment=COMMON_ENV_VARS,
         command="uv run -m etl",
         container_name=DAG_ID,

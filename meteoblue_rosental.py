@@ -39,7 +39,6 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mnt_tmp_dir=False,
         private_environment={
             **COMMON_ENV_VARS,
             "API_KEY_METEOBLUE": Variable.get("API_KEY_METEOBLUE"),
