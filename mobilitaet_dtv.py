@@ -29,7 +29,7 @@ with DAG(
     "mobilitaet_dtv",
     description="Run the mobilitaet_dtv docker container",
     default_args=default_args,
-    schedule="0 3 * * *",
+    schedule="0 4 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
