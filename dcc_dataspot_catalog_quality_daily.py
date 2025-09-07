@@ -1,5 +1,5 @@
 """
-# dcc_dataspot_sync_org_structures_and_ods_datasets
+# dcc_dataspot_catalog_quality_daily
 """
 
 from datetime import datetime, timedelta
@@ -13,9 +13,9 @@ from common_variables import COMMON_ENV_VARS
 
 default_args = {
     "owner": "renato.farruggio",
-    "description": "Run dataspot sync operations in sequence",
+    "description": "Run dataspot catalog quality daily checks",
     "depends_on_past": False,
-    "start_date": datetime(2025, 6, 5),
+    "start_date": datetime(2025, 9, 8),
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
@@ -24,10 +24,10 @@ default_args = {
 }
 
 with DAG(
-    "dcc_dataspot_daily_jobs",
+    "dcc_dataspot_catalog_quality_daily",
     default_args=default_args,
-    description="Run dataspot sync operations in sequence",
-    schedule="0 3 * * *",
+    description="Run dataspot catalog quality daily checks",
+    schedule="0 4 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -36,9 +36,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
-        docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
-        docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
-        docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
+        docker rm -f dcc_dataspot_catalog_quality_daily 2>/dev/null || true
         ''',
     )
     
@@ -60,53 +58,21 @@ with DAG(
         "ODS_API_TYPE": Variable.get("ODS_API_TYPE")
     }
     
-    # Second task: sync organization structures
-    sync_org_structures = DockerOperator(
-        task_id="sync_org_structures",
+    # Task: ensure catalog quality as defined in dataspot
+    catalog_quality_daily = DockerOperator(
+        task_id="catalog_quality_daily",
         image="ghcr.io/dcc-bs/dataspot:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         private_environment=dataspot_env,
-        command="python -m scripts.sync_org_structures",
-        container_name="dcc_dataspot_sync_org_structures",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-    )
-    
-    # Third task: sync ODS dataset components
-    sync_ods_dataset_components = DockerOperator(
-        task_id="sync_ods_dataset_components",
-        image="ghcr.io/dcc-bs/dataspot:latest",
-        force_pull=True,
-        api_version="auto",
-        auto_remove="force",
-        mount_tmp_dir=False,
-        private_environment=dataspot_env,
-        command="python -m scripts.sync_ods_dataset_components",
-        container_name="dcc_dataspot_sync_ods_dataset_components",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-    )
-
-    # Fourth task: sync ODS datasets
-    sync_ods_datasets = DockerOperator(
-        task_id="sync_ods_datasets",
-        image="ghcr.io/dcc-bs/dataspot:latest",
-        force_pull=True,
-        api_version="auto",
-        auto_remove="force",
-        mount_tmp_dir=False,
-        private_environment=dataspot_env,
-        command="python -m scripts.sync_ods_datasets",
-        container_name="dcc_dataspot_sync_ods_datasets",
+        command="python -m scripts.catalog_quality_daily.daily_checks__combined",
+        container_name="dcc_dataspot_catalog_quality_daily",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
     )
     
     # Set the task dependency
-    cleanup_containers >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
+    cleanup_containers >> catalog_quality_daily
