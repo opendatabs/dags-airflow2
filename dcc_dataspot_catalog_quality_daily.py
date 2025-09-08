@@ -15,7 +15,7 @@ default_args = {
     "owner": "renato.farruggio",
     "description": "Run dataspot catalog quality daily checks",
     "depends_on_past": False,
-    "start_date": datetime(2025, 9, 8),
+    "start_date": datetime(2025, 9, 5),
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
