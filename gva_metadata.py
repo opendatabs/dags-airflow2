@@ -52,10 +52,5 @@ with DAG(
                 target="/code/data",
                 type="bind",
             ),
-            Mount(
-                source=f"{PATH_TO_CODE}/data-processing/gva_metadata/change_tracking",
-                target="/code/change_tracking",
-                type="bind",
-            ),
         ],
     )
