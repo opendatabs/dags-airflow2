@@ -29,7 +29,7 @@ with DAG(
     "gva_metadata",
     default_args=default_args,
     description="Run the gva_metadata docker container",
-    schedule="*0 * * * *",
+    schedule="0 * * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
