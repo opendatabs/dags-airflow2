@@ -52,5 +52,10 @@ with DAG(
                 target="/code/data",
                 type="bind",
             ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/harvesters/FGI",
+                target="/code/export",
+                type="bind",
+            ),
         ],
     )
