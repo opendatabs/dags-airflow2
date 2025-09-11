@@ -43,11 +43,6 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
-                target="/code/data",
-                type="bind",
-            ),
-            Mount(
                 source=f"{PATH_TO_CODE}/data-processing//kapo_ordnungsbussen/data",
                 target="/code/data_orig/ordnungsbussen",
                 type="bind",

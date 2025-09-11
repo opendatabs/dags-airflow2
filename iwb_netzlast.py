@@ -75,6 +75,7 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="Rscript Stromverbrauch_OGD.R",
+        private_environment=COMMON_ENV_VARS,
         container_name=f"{DAG_ID}--fit_model",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",

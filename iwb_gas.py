@@ -63,24 +63,26 @@ with DAG(
 
     fit_model = DockerOperator(
         task_id="fit_model",
-        image="gasverbrauch:latest",
+        image="ghcr.io/opendatabs/stata_erwarteter_gasverbrauch:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command="Rscript /code/data-processing/stata_erwarteter_gasverbrauch/Gasverbrauch_OGD.R",
+        command="Rscript Gasverbrauch_OGD.R",
+        private_environment=COMMON_ENV_VARS,
         container_name="gasverbrauch--fit_model",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing",
-                target="/code/data-processing",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_erwarteter_gasverbrauch/data",
+                target="/code/data",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Gasverbrauch",
-                target="/code/data-processing/stata_erwarteter_gasverbrauch/data/export",
+                target="/code/data/export",
                 type="bind",
             ),
         ],
