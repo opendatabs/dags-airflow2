@@ -9,6 +9,8 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
 default_args = {
     "owner": "orhan.saeedi",
     "depend_on_past": False,
@@ -28,24 +30,41 @@ with DAG(
 ) as dag:
     transform = DockerOperator(
         task_id="transform",
-        image="stata_konoer:latest",
+        image="ghcr.io/opendatabs/stata_konoer:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command="Rscript /code/data-processing/stata_konoer/etl.R",
+        command="Rscript etl.R",
+        private_environment=COMMON_ENV_VARS,
         container_name="stata_konoer--transform",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source="/data/dev/workspace/data-processing",
-                target="/code/data-processing",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
+                target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing//kapo_ordnungsbussen/data",
+                target="/code/data_orig/ordnungsbussen",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/stadtreinigung_wildedeponien/data",
+                target="/code/data_orig/wildedeponien",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/tba_sprayereien/data",
+                target="/code/data_orig/sprayereien",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/KoNöR",
-                target="/code/data-processing/stata_konoer/data",
+                target="/code/data",
                 type="bind",
             ),
         ],
@@ -68,7 +87,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/KoNöR",
                 target="/code/data-processing/stata_konoer/data",
@@ -94,7 +113,7 @@ with DAG(
                 target="/root/.ssh/id_rsa",
                 type="bind",
             ),
-            Mount(source=Variable.get("PATH_TO_CODE"), target="/code", type="bind"),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/KoNöR",
                 target="/code/data-processing/stata_konoer/data",
