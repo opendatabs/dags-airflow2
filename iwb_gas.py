@@ -77,12 +77,12 @@ with DAG(
         mounts=[
             Mount(
                 source=f"{PATH_TO_CODE}/R-data-processing/stata_erwarteter_gasverbrauch/data",
-                target="/code/data",
+                target="/home/jovyan/data",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Gasverbrauch",
-                target="/code/data/export",
+                target="/home/jovyan/data/export",
                 type="bind",
             ),
         ],
