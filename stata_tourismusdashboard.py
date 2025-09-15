@@ -89,7 +89,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command="Rscript /code/app_write_OGD.R",
+        command="Rscript app_write_OGD.R",
         private_environment={
             "https_proxy": https_proxy,
             "http_proxy": http_proxy,
@@ -102,7 +102,7 @@ with DAG(
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
+                target="/home/rstudio/data",
                 type="bind",
             )
         ],
@@ -114,8 +114,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mount_tmp_dir=False,
-        command="Rscript /code/app_load_from_OGD.R",
+        command="Rscript app_load_from_OGD.R",
         private_environment={
             "https_proxy": https_proxy,
             "http_proxy": http_proxy,
@@ -127,7 +126,7 @@ with DAG(
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Tourismus",
-                target="/code/data",
+                target="/home/rstudio/data",
                 type="bind",
             )
         ],
@@ -139,8 +138,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mount_tmp_dir=False,
-        command="Rscript /code/app_write_OGD.R",
+        command="Rscript app_write_OGD.R",
         private_environment={
             "https_proxy": https_proxy,
             "http_proxy": http_proxy,
@@ -153,7 +151,7 @@ with DAG(
         mounts=[
             Mount(
                 source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
-                target="/code/data",
+                target="/home/rstudio/data",
                 type="bind",
             )
         ],
@@ -165,8 +163,7 @@ with DAG(
         force_pull=True,
         api_version="auto",
         auto_remove="force",
-        mount_tmp_dir=False,
-        command="Rscript /code/app_load_from_OGD.R",
+        command="Rscript app_load_from_OGD.R",
         private_environment={
             "https_proxy": https_proxy,
             "http_proxy": http_proxy,
@@ -178,7 +175,7 @@ with DAG(
         mounts=[
             Mount(
                 source=f"{PATH_TO_CODE}/R-data-processing/tourismusdashboard/data",
-                target="/code/data",
+                target="/home/rstudio/data",
                 type="bind",
             )
         ],
