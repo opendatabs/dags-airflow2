@@ -74,6 +74,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
+        user="root",
         command="Rscript Stromverbrauch_OGD.R",
         private_environment=COMMON_ENV_VARS,
         container_name=f"{DAG_ID}--fit_model",
