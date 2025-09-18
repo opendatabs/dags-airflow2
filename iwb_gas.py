@@ -57,7 +57,12 @@ with DAG(
                 source=f"{PATH_TO_CODE}/data-processing/iwb_gas/data",
                 target="/code/data",
                 type="bind",
-            )
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/iwb_gas/change_tracking",
+                target="/code/change_tracking",
+                type="bind",
+            ),
         ],
     )
 
