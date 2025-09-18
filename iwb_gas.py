@@ -70,7 +70,6 @@ with DAG(
         mount_tmp_dir=False,
         command="Rscript Gasverbrauch_OGD.R",
         private_environment=COMMON_ENV_VARS,
-        user="root",
         container_name="gasverbrauch--fit_model",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
