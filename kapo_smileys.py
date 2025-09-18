@@ -4,6 +4,7 @@ This DAG updates the following datasets:
 
 - [100268](https://data.bs.ch/explore/dataset/100268)
 - [100277](https://data.bs.ch/explore/dataset/100277)
+- [Datasette](https://datatools.bs.ch/Smiley-Geschwindigkeitsmessungen)
 """
 
 from datetime import datetime, timedelta

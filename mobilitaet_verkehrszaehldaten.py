@@ -5,6 +5,9 @@ This DAG updates the following datasets:
 - [100006](https://data.bs.ch/explore/dataset/100006)
 - [100013](https://data.bs.ch/explore/dataset/100013)
 - [100356](https://data.bs.ch/explore/dataset/100356)
+- [Datasette MIV](https://datatools.bs.ch/MIV)
+- [Datasette Velo Fuss](https://datatools.bs.ch/Velo_Fuss)
+- [Datasette MIV Geschwindigkeitsklassen](https://datatools.bs.ch/MIV_Geschwindigkeitsklassen)
 """
 
 from datetime import datetime, timedelta

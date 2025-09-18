@@ -69,24 +69,27 @@ with DAG(
 
     fit_model = DockerOperator(
         task_id="fit_model",
-        image="stromverbrauch:latest",
+        image="ghcr.io/opendatabs/stata_erwarteter_stromverbrauch:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command="Rscript /code/data-processing/stata_erwarteter_stromverbrauch/Stromverbrauch_OGD.R",
+        user="root",
+        command="Rscript Stromverbrauch_OGD.R",
+        private_environment=COMMON_ENV_VARS,
         container_name=f"{DAG_ID}--fit_model",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing",
-                target="/code/data-processing",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_erwarteter_stromverbrauch/data",
+                target="/home/jovyan/data",
                 type="bind",
             ),
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Stromverbrauch",
-                target="/code/data-processing/stata_erwarteter_stromverbrauch/data/export",
+                target="/home/jovyan/data/export",
                 type="bind",
             ),
         ],
