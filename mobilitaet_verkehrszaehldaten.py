@@ -91,7 +91,8 @@ with DAG(
 
     rsync = DockerOperator(
         task_id="rsync",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,

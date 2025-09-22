@@ -187,7 +187,8 @@ with DAG(
 
     rsync_test_1 = DockerOperator(
         task_id="rsync_test_1",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
@@ -213,7 +214,8 @@ with DAG(
 
     rsync_test_2 = DockerOperator(
         task_id="rsync_test_2",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
@@ -239,7 +241,8 @@ with DAG(
 
     rsync_prod_1 = DockerOperator(
         task_id="rsync_prod_1",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
@@ -265,7 +268,8 @@ with DAG(
 
     rsync_prod_2 = DockerOperator(
         task_id="rsync_prod_2",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,

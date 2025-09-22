@@ -67,7 +67,8 @@ with DAG(
 
     rsync_test = DockerOperator(
         task_id="rsync1",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
@@ -93,7 +94,8 @@ with DAG(
 
     rsync_prod = DockerOperator(
         task_id="rsync2",
-        image="rsync:latest",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
