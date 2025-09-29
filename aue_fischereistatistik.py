@@ -89,3 +89,5 @@ with DAG(
             ),
         ],
     )
+
+    create_gewaesser_file >> upload_fischereistatistk
