@@ -38,7 +38,10 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
-        private_environment=COMMON_ENV_VARS,
+        private_environment={
+            **COMMON_ENV_VARS,
+            "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
+        },
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
