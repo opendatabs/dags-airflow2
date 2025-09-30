@@ -13,6 +13,13 @@ from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "gva_metadata"
+FAILURE_THRESHOLD = 1  # Skip first failure, fail on second
+EXECUTION_TIMEOUT = timedelta(minutes=5)
+SCHEDULE = "0 * * * *"
 
 default_args = {
     "owner": "rstam.aloush",
@@ -26,29 +33,31 @@ default_args = {
 }
 
 with DAG(
-    "gva_metadata",
+    DAG_ID,
     default_args=default_args,
-    description="Run the gva_metadata docker container",
-    schedule="0 * * * *",
+    description=f"Run the {DAG_ID} docker container",
+    schedule=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/gva_metadata:latest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="gva_metadata",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/gva_metadata/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
