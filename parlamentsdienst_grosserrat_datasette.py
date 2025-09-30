@@ -41,6 +41,7 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
+            "DOCLING_API_KEY": Variable.get("DOCLING_API_KEY"),
         },
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
