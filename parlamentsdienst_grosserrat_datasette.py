@@ -52,6 +52,7 @@ with DAG(
             "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
             "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
         },
+        user="root",
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
