@@ -11,6 +11,8 @@ from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
+PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
+
 default_args = {
     "owner": "orhan.saeedi",
     "depend_on_past": False,
@@ -37,17 +39,32 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command="uv run -m etl",
+        command="sh -c 'update-ca-certificates || true; uv run -m etl'",
         private_environment={
             **COMMON_ENV_VARS,
             "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
             "DOCLING_API_KEY": Variable.get("DOCLING_API_KEY"),
+            "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
+            "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
+            "PERL_LWP_SSL_CA_FILE": "/etc/ssl/certs/ca-certificates.crt",
+            "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
+            "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
         },
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
+            Mount(
+                source=f"{PATH_TO_LOCAL_CERTS}/{Variable.get("CA_ZID_FILENAME")}",
+                target=f"/usr/local/share/ca-certificates/{Variable.get("CA_ZID_FILENAME")}",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_LOCAL_CERTS}/{Variable.get("CA_PKI_FILENAME")}",
+                target=f"/usr/local/share/ca-certificates/{Variable.get("CA_PKI_FILENAME")}",
+                type="bind",
+            ),
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat/data/export",
                 target="/code/data_orig",
