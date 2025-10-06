@@ -52,7 +52,6 @@ with DAG(
             "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
             "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
         },
-        user="root",
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
@@ -60,12 +59,12 @@ with DAG(
         mounts=[
             Mount(
                 source=f"{PATH_TO_LOCAL_CERTS}{CA_ZID_FILENAME}",
-                target=f"/usr/local/share/ca-certificates{CA_ZID_FILENAME}",
+                target=f"/usr/local/share/ca-certificates/{CA_ZID_FILENAME}",
                 type="bind",
             ),
             Mount(
                 source=f"{PATH_TO_LOCAL_CERTS}{CA_PKI_FILENAME}",
-                target=f"/usr/local/share/ca-certificates{CA_PKI_FILENAME}",
+                target=f"/usr/local/share/ca-certificates/{CA_PKI_FILENAME}",
                 type="bind",
             ),
             Mount(
