@@ -63,8 +63,8 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_LOCAL_CERTS}{CA_ZID_FILENAME}",
-                target=f"/usr/local/share/ca-certificates{CA_ZID_FILENAME}",
+                source=f"{PATH_TO_LOCAL_CERTS}{CA_PKI_FILENAME}",
+                target=f"/usr/local/share/ca-certificates{CA_PKI_FILENAME}",
                 type="bind",
             ),
             Mount(
