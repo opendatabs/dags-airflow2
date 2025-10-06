@@ -63,6 +63,11 @@ with DAG(
                 type="bind",
             ),
             Mount(
+                source=f"{PATH_TO_LOCAL_CERTS}{CA_PKI_FILENAME}",
+                target=f"/usr/local/share/ca-certificates/{CA_PKI_FILENAME}",
+                type="bind",
+            ),
+            Mount(
                 source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat/data/export",
                 target="/code/data_orig",
                 type="bind",
