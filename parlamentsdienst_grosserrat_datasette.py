@@ -12,6 +12,8 @@ from docker.types import Mount
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
+CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
+CA_PKI_FILENAME = Variable.get("CA_PKI_FILENAME")
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -56,13 +58,13 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_LOCAL_CERTS}/{Variable.get("CA_ZID_FILENAME")}",
-                target=f"/usr/local/share/ca-certificates/{Variable.get("CA_ZID_FILENAME")}",
+                source=f"{PATH_TO_LOCAL_CERTS}{CA_ZID_FILENAME}",
+                target=f"/usr/local/share/ca-certificates{CA_ZID_FILENAME}",
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_LOCAL_CERTS}/{Variable.get("CA_PKI_FILENAME")}",
-                target=f"/usr/local/share/ca-certificates/{Variable.get("CA_PKI_FILENAME")}",
+                source=f"{PATH_TO_LOCAL_CERTS}{CA_ZID_FILENAME}",
+                target=f"/usr/local/share/ca-certificates{CA_ZID_FILENAME}",
                 type="bind",
             ),
             Mount(
