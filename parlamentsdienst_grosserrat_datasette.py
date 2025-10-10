@@ -56,7 +56,7 @@ with DAG(
         },
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
+        network_mode="host",
         tty=True,
         mounts=[
             Mount(
