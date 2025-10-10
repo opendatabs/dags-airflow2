@@ -44,8 +44,11 @@ with DAG(
         command="sh -c 'update-ca-certificates || true; uv run -m etl'",
         # For debugging
         # command="bash -lc 'trap : TERM INT; sleep 36000'",
-        environment={
+        private_environment={
             **COMMON_ENV_VARS,
+            "HTTP_PROXY":  Variable.get("http_proxy"),
+            "HTTPS_PROXY": Variable.get("https_proxy"),
+            "NO_PROXY":    Variable.get("no_proxy"),
             "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
             "DOCLING_API_KEY": Variable.get("DOCLING_API_KEY"),
             "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
