@@ -41,9 +41,9 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        # command="sh -c 'update-ca-certificates || true; uv run -m etl'",
+        command="sh -c 'update-ca-certificates || true; uv run -m etl'",
         # For debugging
-        command="bash -lc 'trap : TERM INT; sleep 36000'",
+        # command="bash -lc 'trap : TERM INT; sleep 36000'",
         private_environment={
             **COMMON_ENV_VARS,
             "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
@@ -56,7 +56,7 @@ with DAG(
         },
         container_name="parlamentsdienst_grosserrat_datasette",
         docker_url="unix://var/run/docker.sock",
-        network_mode="host",
+        network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
