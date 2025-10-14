@@ -62,7 +62,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/MOB-StatA",
+                source="/mnt/MOB-StatA/Dbdstcsvexport",
                 target="/code/data_orig",
                 type="bind",
             ),
