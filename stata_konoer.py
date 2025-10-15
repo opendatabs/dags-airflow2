@@ -58,7 +58,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
+                source="/mnt/OGD-DataExch/StatA/KoNöR",
                 target="/code/data",
                 type="bind",
             ),
