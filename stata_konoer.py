@@ -58,7 +58,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/KoNöR",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -85,7 +85,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/KoNöR",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
                 target="/code/data-processing/stata_konoer/data",
                 type="bind",
             ),
@@ -112,7 +112,7 @@ with DAG(
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/KoNöR",
+                source=f"{PATH_TO_CODE}/R-data-processing/stata_konoer/data",
                 target="/code/data-processing/stata_konoer/data",
                 type="bind",
             ),
