@@ -84,6 +84,11 @@ with DAG(
                 type="bind",
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/KoNöR",
+                target="/code/data",
+                type="bind",
+            ),
         ],
     )
 
@@ -106,6 +111,11 @@ with DAG(
                 type="bind",
             ),
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/KoNöR",
+                target="/code/data",
+                type="bind",
+            ),
         ],
     )
 
