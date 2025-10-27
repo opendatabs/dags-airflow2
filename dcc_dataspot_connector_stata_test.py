@@ -1,3 +1,11 @@
+"""
+# dcc_dataspot_connector_stata_test
+This DAG runs the Dataspot connector for StatA test database.
+
+- Connects to StatA test database
+- Executes data extraction using Dataspot connector
+"""
+
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
@@ -40,8 +48,10 @@ with DAG(
     run_connector = DockerOperator(
         task_id=f"run_{CONTAINER_NAME}",
         image="eclipse-temurin:17-jre-alpine",
+        force_pull=True,
         api_version="auto",
         auto_remove="force",
+        mount_tmp_dir=False,
         command=f"java -jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
         private_environment=COMMON_ENV_VARS,
         container_name=CONTAINER_NAME,
