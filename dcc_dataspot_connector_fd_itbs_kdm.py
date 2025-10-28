@@ -23,7 +23,7 @@ SERVICE_FILE_NAME = "myservice.yaml"
 SERVICE_NAME = "KDMDatabaseService"
 
 # Configuration constants on github
-WORKDIR_FOLDER_IN_GITHUB = "fd_itsm_kdm"
+WORKDIR_FOLDER_IN_GITHUB = "fd-itsm-kdm"
 APPLICATION_FILE_NAME = "application.yaml"
 
 default_args = {
