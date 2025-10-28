@@ -1,0 +1,12 @@
+connector:
+  config:
+    database:
+      file: ./database/dsconnector
+    dump:
+      directory: ./dump
+    placeholders:
+      files:
+        - /opt/configs/application.properties
+    jars: 
+      - type: jdbc
+        file: /opt/driver/ojdbc17.jar
