@@ -3,7 +3,6 @@
 """
 
 from datetime import datetime, timedelta
-import pendulum
 
 from airflow import DAG
 from airflow.models import Variable
@@ -15,8 +14,6 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
 CA_PKI_FILENAME = Variable.get("CA_PKI_FILENAME")
-
-LOCAL_TZ = pendulum.timezone("Europe/Zurich")
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -33,11 +30,10 @@ with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
-    schedule="0 21 * * 0",
+    schedule="0 20 * * 0",
     catchup=False,
     # Run from 21:00 to 07:00;
     dagrun_timeout=timedelta(hours=10),
-    timezone=LOCAL_TZ,
 ) as dag:
     dag.doc_md = __doc__
     upload = DockerOperator(
