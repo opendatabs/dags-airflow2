@@ -3,6 +3,7 @@
 """
 
 from datetime import datetime, timedelta
+import pendulum
 
 from airflow import DAG
 from airflow.models import Variable
@@ -14,6 +15,8 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
 CA_PKI_FILENAME = Variable.get("CA_PKI_FILENAME")
+
+LOCAL_TZ = pendulum.timezone("Europe/Zurich")
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -30,8 +33,11 @@ with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
-    schedule="0 5 * * 0",
+    schedule="0 21 * * 0",
     catchup=False,
+    # Run from 21:00 to 07:00;
+    dagrun_timeout=timedelta(hours=10),
+    timezone=LOCAL_TZ,
 ) as dag:
     dag.doc_md = __doc__
     upload = DockerOperator(
@@ -41,20 +47,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command=(
-            "bash -lc 'set -euo pipefail; update-ca-certificates || true; "
-            "HOST=$(python - <<\"PY\"\nimport os,urllib.parse as u;print(u.urlparse(os.environ[\"DOCLING_HTTP_CLIENT\"]).hostname)\nPY\n); "
-            "IP=$(getent hosts $HOST | awk \"{print \\$1}\" | head -1 || true); "
-            "for v in no_proxy NO_PROXY; do "
-            "  cur=${!v:-}; "
-            "  if [ -n \"$cur\" ]; then export $v=\"$cur,$HOST${IP:+,$IP}\"; else export $v=\"$HOST${IP:+,$IP}\"; fi; "
-            "done; "
-            "echo no_proxy=$no_proxy; echo NO_PROXY=$NO_PROXY; "
-            "curl -sv --http1.1 -H \"Accept-Encoding: identity\" \"$DOCLING_HTTP_CLIENT/health\" >/dev/null; "
-            "uv run -m etl'"
-        ),
-        # For debugging
-        # command="bash -lc 'trap : TERM INT; sleep 36000'",
+        command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
             "HTTP_PROXY":  Variable.get("http_proxy"),
