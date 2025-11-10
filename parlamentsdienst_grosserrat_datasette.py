@@ -30,7 +30,7 @@ with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
-    schedule="0 20 * * 0",
+    schedule="0 20 * * *",
     catchup=False,
     # Run from 21:00 to 07:00;
     dagrun_timeout=timedelta(hours=10),
