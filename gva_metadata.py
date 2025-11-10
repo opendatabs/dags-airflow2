@@ -17,7 +17,7 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 # DAG configuration
 DAG_ID = "gva_metadata"
-FAILURE_THRESHOLD = 1  # Skip first failure, fail on second
+FAILURE_THRESHOLD = 4
 EXECUTION_TIMEOUT = timedelta(minutes=5)
 SCHEDULE = "0 * * * *"
 
