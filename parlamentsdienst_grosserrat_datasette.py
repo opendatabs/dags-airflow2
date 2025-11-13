@@ -32,8 +32,6 @@ with DAG(
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
     schedule="0 20 * * *",
     catchup=False,
-    # Run from 21:00 to 07:00;
-    dagrun_timeout=timedelta(hours=10),
 ) as dag:
     dag.doc_md = __doc__
     upload = DockerOperator(
@@ -44,6 +42,8 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
+        # Run from 21:00 to 07:00
+        execution_timeout=timedelta(hours=10),
         private_environment={
             **COMMON_ENV_VARS,
             "HTTP_PROXY":  Variable.get("http_proxy"),
