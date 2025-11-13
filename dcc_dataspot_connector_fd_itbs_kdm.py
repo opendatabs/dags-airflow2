@@ -4,6 +4,67 @@ This DAG runs the Dataspot connector for the FD IT-BS KDM database.
 
 - Connects to StatA test database
 - Executes data extraction using Dataspot connector
+
+***Note***
+This is an Oracle database, and we had some trouble setting this up.
+Here is the current settings (in german, since we will communicate in german
+with other DB Admins aswell):
+
+Unser Benutzer besitzt SELECT_CATALOG_ROLE Rechte auf alle KDM-Schemas.
+
+Wir hatten das Problem, dass der Connector nach all_* tables gesucht hatte,
+die Tabellen aber dba_* heissen. Darum wurden sie nicht gefunden (bzw. nur leere):
+
+dba_*   => jeweils alle Objekte der DB
+all_*      => jeweils alle Objekte, die dem eingeloggten User gehören oder die ihm gegranted worden sind
+mit * = objects, views, constraints, tables etc.
+In den Logfiles ersichtlich ist, dass Queries wie diese ausgeführt werden:
+SELECT NULL AS pktable_cat,
+       p.owner as pktable_schem,
+       p.table_name as pktable_name
+      FROM all_cons_columns pc, all_constraints p,
+      all_cons_columns fc, all_constraints f
+WHERE 1 = 1
+  AND f.constraint_type = 'R'
+…..
+;
+=>	Damit konnten eben keine Tabellen oder Spalten, auf die NICHT «select on » gegranted worden war
+gesehen werden – also gar nichts.
+
+
+*Lösung*:
+Die Queries des Dataspots, oben ein Beispiel müssen angepasst werden von z.B.
+
+SELECT NULL AS pktable_cat,
+…
+FROM all_cons_columns pc, all_constraints p,
+
+Nach
+
+SELECT NULL AS pktable_cat,
+…
+FROM dba_cons_columns pc, dba_constraints p,
+
+
+*Hack*:
+Wir gaukeln FD_ITBS_KDM_DATASPOT vor, er lese all_cons_columns, wenn er dba_cons_columns liest:
+
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_tab_columns for dba_tab_columns;
+
+das wird eben mit anderen Views dann auch noch gemacht:
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_objects for dba_objects;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_tables for dba_tables;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_tab_cols for dba_tab_cols;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_users for dba_users;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_constraints for dba_constraints;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_cons_columns for dba_cons_columns;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_tab_comments  for dba_tab_comments;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_types for dba_types;
+create or replace synonym FD_ITBS_KDM_DATASPOT.all_col_comments for dba_col_comments;
+
+=>	Also für den User werden die all_*-views mit den dba_*-views «überschrieben» - dadurch
+müssen die Queries vom dataspot connector nicht neu geschrieben werden.
+
 """
 
 from datetime import datetime, timedelta
