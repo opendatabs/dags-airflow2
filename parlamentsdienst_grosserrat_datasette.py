@@ -9,7 +9,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE, PATH_TO_DATASETTE_FILES
 
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
@@ -78,8 +78,8 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_datasette/data",
-                target="/code/data",
+                source=PATH_TO_DATASETTE_FILES,
+                target="/code/data/datasette",
                 type="bind",
             ),
             Mount(
@@ -94,27 +94,3 @@ with DAG(
             ),
         ],
     )
-
-    rsync = DockerOperator(
-        task_id="rsync",
-        image="ghcr.io/opendatabs/rsync:latest",
-        force_pull=True,
-        api_version="auto",
-        auto_remove="force",
-        mount_tmp_dir=False,
-        command="python3 -m rsync.sync_files parlamentsdienst_grosserrat.json",
-        container_name="parlamentsdienst_grosserrat--rsync",
-        docker_url="unix://var/run/docker.sock",
-        network_mode="bridge",
-        tty=True,
-        mounts=[
-            Mount(
-                source="/home/syncuser/.ssh/id_rsa",
-                target="/root/.ssh/id_rsa",
-                type="bind",
-            ),
-            Mount(source="/data/dev/workspace", target="/code", type="bind"),
-        ],
-    )
-
-    upload >> rsync
