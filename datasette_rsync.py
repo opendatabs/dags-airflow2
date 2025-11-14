@@ -28,9 +28,8 @@ with DAG(
     schedule="0 8 * * *",
     catchup=False,
 ) as dag:
-
     rsync = DockerOperator(
-        task_id="rsync1",
+        task_id="rsync",
         image="ghcr.io/opendatabs/rsync:latest",
         force_pull=True,
         api_version="auto",
