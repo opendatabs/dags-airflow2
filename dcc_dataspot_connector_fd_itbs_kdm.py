@@ -32,7 +32,7 @@ WHERE 1 = 1
 gesehen werden – also gar nichts.
 
 
-*Lösung*:
+*Offensichtliche Lösung*:
 Die Queries des Dataspots, oben ein Beispiel müssen angepasst werden von z.B.
 
 SELECT NULL AS pktable_cat,
@@ -46,12 +46,12 @@ SELECT NULL AS pktable_cat,
 FROM dba_cons_columns pc, dba_constraints p,
 
 
-*Hack*:
+*Hack (da wir die Queries im Connector nicht anpassen können)*:
 Wir gaukeln FD_ITBS_KDM_DATASPOT vor, er lese all_cons_columns, wenn er dba_cons_columns liest:
 
 create or replace synonym FD_ITBS_KDM_DATASPOT.all_tab_columns for dba_tab_columns;
 
-das wird eben mit anderen Views dann auch noch gemacht:
+das wird mit anderen Views dann auch noch gemacht:
 create or replace synonym FD_ITBS_KDM_DATASPOT.all_objects for dba_objects;
 create or replace synonym FD_ITBS_KDM_DATASPOT.all_tables for dba_tables;
 create or replace synonym FD_ITBS_KDM_DATASPOT.all_tab_cols for dba_tab_cols;
@@ -65,6 +65,7 @@ create or replace synonym FD_ITBS_KDM_DATASPOT.all_col_comments for dba_col_comm
 =>	Also für den User werden die all_*-views mit den dba_*-views «überschrieben» - dadurch
 müssen die Queries vom dataspot connector nicht neu geschrieben werden.
 
+Artikel dazu: https://stackoverflow.com/questions/53410772/privileges-oracle-jdbc-getmetadata
 """
 
 from datetime import datetime, timedelta
