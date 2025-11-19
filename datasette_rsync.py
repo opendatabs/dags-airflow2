@@ -25,7 +25,7 @@ with DAG(
     "datasette_rsync",
     description="Run the datasette_rsync docker container",
     default_args=default_args,
-    schedule="0 8 * * *",
+    schedule="0 0 * * *",
     catchup=False,
 ) as dag:
     rsync = DockerOperator(
