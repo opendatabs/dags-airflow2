@@ -10,7 +10,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS, PATH_TO_CODE, PATH_TO_DATASETTE_FILES
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "jonas.bieri",
@@ -83,11 +83,33 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=PATH_TO_DATASETTE_FILES,
+                source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data/datasette",
                 target="/code/data/datasette",
                 type="bind",
             ),
         ],
     )
 
-    upload >> compute_db_files
+    rsync = DockerOperator(
+        task_id="rsync",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        command="python3 -m rsync.sync_files stata_befragungen.json",
+        container_name="stata_befragungen--rsync",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source="/data/dev/workspace", target="/code", type="bind"),
+        ],
+    )
+
+    upload >> compute_db_files >> rsync

@@ -15,7 +15,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS, PATH_TO_CODE, PATH_TO_DATASETTE_FILES
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 default_args = {
     "owner": "jonas.bieri",
@@ -60,11 +60,6 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=PATH_TO_DATASETTE_FILES,
-                target="/code/data/datasette",
-                type="bind",
-            ),
-            Mount(
                 source="/mnt/OGD-DataExch/KaPo/VP-Geschwindigkeitsmonitoring",
                 target="/code/data_orig",
                 type="bind",
@@ -76,4 +71,27 @@ with DAG(
             ),
         ],
     )
-    
+
+    rsync = DockerOperator(
+        task_id="rsync",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        command="python3 -m rsync.sync_files kapo_geschwindigkeitsmonitoring.json",
+        container_name="kapo_geschwindigkeitsmonitoring--rsync",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
+        ],
+    )
+
+    upload >> rsync
