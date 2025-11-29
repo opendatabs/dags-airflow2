@@ -1,11 +1,8 @@
 """
-# aue-umweltlabor
+# aue_fischereistatistik
 This DAG updates the following datasets:
 
-- [100066](https://data.bs.ch/explore/dataset/100066)
-- [100067](https://data.bs.ch/explore/dataset/100067)
-- [100068](https://data.bs.ch/explore/dataset/100068)
-- [100069](https://data.bs.ch/explore/dataset/100069)
+- [100193](https://data.bs.ch/explore/dataset/100193)
 """
 
 from datetime import datetime, timedelta
