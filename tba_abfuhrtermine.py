@@ -53,7 +53,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/TBA/Abfurhtermine",
+                source="/mnt/OGD-DataExch/StatA/TBA/Abfuhrtermine",
                 target="/code/data_orig",
                 type="bind",
             ),
