@@ -53,7 +53,8 @@ with DAG(
         "DATASPOT_CLIENT_SECRET": Variable.get("DATASPOT_CLIENT_SECRET"),
         "DATASPOT_SERVICE_USER_ACCESS_KEY": Variable.get("DATASPOT_SERVICE_USER_ACCESS_KEY"),
         "ODS_DOMAIN": Variable.get("ODS_DOMAIN"),
-        "ODS_API_TYPE": Variable.get("ODS_API_TYPE")
+        "ODS_API_TYPE": Variable.get("ODS_API_TYPE"),
+        "HTTPS_ACCESS_KEY_STAATSKALENDER": Variable.get("HTTPS_ACCESS_KEY_STAATSKALENDER")
     }
     
     # Task: ensure catalog quality as defined in dataspot
