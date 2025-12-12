@@ -53,7 +53,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-GVA",
+                source="/mnt/OGD-DataExch/StatA/TBA/Abfurhtermine",
                 target="/code/data_orig",
                 type="bind",
             ),
