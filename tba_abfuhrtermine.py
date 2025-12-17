@@ -29,7 +29,7 @@ with DAG(
     "tba_abfuhrtermine",
     description="Run the tba_abfuhrtermine docker container",
     default_args=default_args,
-    schedule="0 10 * * *",
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
