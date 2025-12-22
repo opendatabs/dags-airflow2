@@ -77,4 +77,4 @@ with DAG(
     )
 
     # Set the task dependency
-    cleanup_old_containers >> upload
+    cleanup_containers >> upload
