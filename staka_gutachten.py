@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.bash import BashOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
@@ -33,6 +34,16 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    # Cleanup task to remove any old containers at the beginning
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+            docker rm -f staka_gutachten 2>/dev/null || true
+            ''',
+    )
+
+    # Main task to run the script
     upload = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/staka_gutachten:latest",
@@ -64,3 +75,6 @@ with DAG(
             ),
         ],
     )
+
+    # Set the task dependency
+    cleanup_old_containers >> upload
