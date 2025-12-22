@@ -37,7 +37,7 @@ with DAG(
         task_id="cleanup_old_containers",
         bash_command='''
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
-        docker rm -f dcc_dataspot_sync_ods_dataset_components 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_ods_dataset_compositions 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
         ''',
     )
@@ -74,17 +74,17 @@ with DAG(
         tty=True,
     )
     
-    # Third task: sync ODS dataset components
-    sync_ods_dataset_components = DockerOperator(
-        task_id="sync_ods_dataset_components",
+    # Third task: sync ODS dataset compositions
+    sync_ods_dataset_compositions = DockerOperator(
+        task_id="sync_ods_dataset_compositions",
         image="ghcr.io/dcc-bs/dataspot:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         private_environment=dataspot_env,
-        command="python -m scripts.sync_ods_dataset_components",
-        container_name="dcc_dataspot_sync_ods_dataset_components",
+        command="python -m scripts.sync_ods_dataset_compositions",
+        container_name="dcc_dataspot_sync_ods_dataset_compositions",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -107,4 +107,4 @@ with DAG(
     )
     
     # Set the task dependency
-    cleanup_containers >> sync_org_structures >> sync_ods_dataset_components >> sync_ods_datasets
+    cleanup_containers >> sync_org_structures >> sync_ods_dataset_compositions >> sync_ods_datasets
