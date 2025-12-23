@@ -39,7 +39,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
-            docker rm -f staka_gutachten 2>/dev/null || true
+            docker rm -f staka_gutachten--upload 2>/dev/null || true
             ''',
     )
 
