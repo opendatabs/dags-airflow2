@@ -9,11 +9,17 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from airflow.operators.bash import BashOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "staka_gutachten"
+FAILURE_THRESHOLD = 1
+EXECUTION_TIMEOUT = timedelta(minutes=3)
+SCHEDULE = "*/5 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -27,10 +33,10 @@ default_args = {
 }
 
 with DAG(
-    "staka_gutachten",
-    description="Run the staka_gutachten.py docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule="*/5 * * * *",
+    schedule=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -39,27 +45,29 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
-            docker rm -f staka_gutachten--upload 2>/dev/null || true
+            docker rm -f {DAG_ID}--upload 2>/dev/null || true
             ''',
     )
 
     # Main task to run the script
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/staka_gutachten:latest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="staka_gutachten--upload",
+        container_name=f"{DAG_ID}--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/staka_gutachten/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -69,7 +77,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/staka_gutachten/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
