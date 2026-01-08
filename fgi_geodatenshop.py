@@ -9,11 +9,12 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
-from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 # DAG configuration
 DAG_ID = "fgi_geodatenshop"
@@ -41,6 +42,16 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    # Cleanup task to remove any old containers at the beginning
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+            docker rm -f {DAG_ID}--upload 2>/dev/null || true
+            docker rm -f {DAG_ID}--ods_harvest 2>/dev/null || true
+            ''',
+    )
+
     upload = FailureTrackingDockerOperator(
         task_id="upload",
         failure_threshold=FAILURE_THRESHOLD,
@@ -56,7 +67,7 @@ with DAG(
             "FTP_USER_01": Variable.get("FTP_USER_01"),
             "FTP_PASS_01": Variable.get("FTP_PASS_01"),
         },
-        container_name=DAG_ID,
+        container_name=f"{DAG_ID}--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
