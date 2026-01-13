@@ -45,7 +45,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command='''
-            docker rm -f {DAG_ID}--upload 2>/dev/null || true
+            docker rm -f {DAG_ID} 2>/dev/null || true
             ''',
     )
 
@@ -61,7 +61,7 @@ with DAG(
         mount_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name=f"{DAG_ID}--upload",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
