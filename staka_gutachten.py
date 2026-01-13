@@ -44,7 +44,7 @@ with DAG(
     # Cleanup task to remove any old containers at the beginning
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
-        bash_command='''
+        bash_command=f'''
             docker rm -f {DAG_ID} 2>/dev/null || true
             ''',
     )
