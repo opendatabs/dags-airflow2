@@ -18,6 +18,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 # DAG configuration
 DAG_ID = "stata_requisitionen"
 FAILURE_THRESHOLD = 0
+EXECUTION_TIMEOUT = timedelta(minutes=30)
 SCHEDULE = "15 4 * * *"
 
 default_args = {

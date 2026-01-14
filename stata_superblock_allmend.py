@@ -15,6 +15,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 # DAG configuration
 DAG_ID = "stata_superblock_allmend"
 FAILURE_THRESHOLD = 0
+EXECUTION_TIMEOUT = timedelta(minutes=60)
 SCHEDULE = "20 4 * * *"
 
 default_args = {
