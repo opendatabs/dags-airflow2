@@ -45,6 +45,7 @@ with DAG(
     upload = FailureTrackingDockerOperator(
         task_id="upload",
         failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
