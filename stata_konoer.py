@@ -58,6 +58,16 @@ with DAG(
                 type="bind",
             ),
             Mount(
+                source="/mnt/OGD-DataExch/StatA/KoNöR/Requisitionen",
+                target="/code/data_orig/requisitionen",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/KoNöR/Allmend",
+                target="/code/data_orig/allmend",
+                type="bind",
+            ),
+            Mount(
                 source="/mnt/OGD-DataExch/StatA/KoNöR/Daten_Dashboard",
                 target="/code/data",
                 type="bind",
