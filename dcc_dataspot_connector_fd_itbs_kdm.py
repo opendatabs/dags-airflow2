@@ -89,7 +89,7 @@ WORKDIR_FOLDER_IN_GITHUB = "fd-itsm-kdm"
 APPLICATION_FILE_NAME = "application.yaml"
 
 default_args = {
-    "owner": "Renato Farruggio",
+    "owner": "renato.farruggio",
     "depends_on_past": False,
     "start_date": datetime(2025, 10, 27),
     "email": Variable.get("EMAIL_RECEIVERS"),
