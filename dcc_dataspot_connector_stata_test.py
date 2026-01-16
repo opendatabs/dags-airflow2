@@ -47,7 +47,7 @@ with DAG(
     
     run_connector = DockerOperator(
         task_id=f"run_{CONTAINER_NAME}",
-        image="ghcr.io/dcc-bs/dataspot/connectors/stata-test:latest",
+        image="ghcr.io/dcc-bs/dataspot/stata-test:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
