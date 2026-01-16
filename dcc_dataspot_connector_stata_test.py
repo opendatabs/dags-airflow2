@@ -47,7 +47,7 @@ with DAG(
     
     run_connector = DockerOperator(
         task_id=f"run_{CONTAINER_NAME}",
-        image="eclipse-temurin:17-jre-alpine",
+        image="ghcr.io/dcc-bs/dataspot-connectors/stata-test:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
