@@ -23,7 +23,7 @@ SERVICE_FILE_NAME = "myservice.yaml"
 SERVICE_NAME = "MyDatabaseService"
 
 # Configuration constants on github
-WORKDIR_FOLDER_IN_GITHUB = "stata-test"
+WORKDIR_FOLDER_IN_GITHUB = "stata-test" # Also used for Docker image name
 APPLICATION_FILE_NAME = "application.yaml"
 
 default_args = {
@@ -47,7 +47,7 @@ with DAG(
     
     run_connector = DockerOperator(
         task_id=f"run_{CONTAINER_NAME}",
-        image="ghcr.io/dcc-bs/dataspot/stata-test:latest",
+        image=f"ghcr.io/dcc-bs/dataspot/connectors/{WORKDIR_FOLDER_IN_GITHUB}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
