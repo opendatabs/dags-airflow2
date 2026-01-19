@@ -47,7 +47,7 @@ with DAG(
     
     run_connector = DockerOperator(
         task_id=f"run_{CONTAINER_NAME}",
-        image="eclipse-temurin:17-jre-alpine",
+        image=f"ghcr.io/dcc-bs/dataspot/connectors/{WORKDIR_FOLDER_IN_GITHUB}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
@@ -55,7 +55,7 @@ with DAG(
         command=f"java -jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
         private_environment={
             **COMMON_ENV_VARS,
-            'AD_USERNAME': Variable.get("AUE_AD_PASSWORD"),
+            'AD_USERNAME': Variable.get("AUE_AD_USERNAME"),
             'AD_PASSWORD': Variable.get("AUE_AD_PASSWORD"),
             'AD_DOMAIN_CONTROLLER': Variable.get("AD_DOMAIN_CONTROLLER"),
             'AD_REALM': Variable.get("AD_REALM"),
