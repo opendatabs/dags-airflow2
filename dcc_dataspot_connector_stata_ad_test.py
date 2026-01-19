@@ -52,7 +52,11 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command=f"java -jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
+        command=f"java "
+                f"-Djava.security.auth.login.config=/tmp/jaas.conf"
+                f"-Djava.security.krb5.conf=/etc/krb5.conf"
+                f"-Djavax.security.auth.useSubjectCredsOnly=false"
+                f"-jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
         private_environment={
             **COMMON_ENV_VARS,
             'AD_USERNAME': Variable.get("AUE_AD_USERNAME"),
