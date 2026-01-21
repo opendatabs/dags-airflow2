@@ -1,0 +1,12 @@
+connector:
+  config:
+    database:
+      file: ./database/dsconnector
+    dump:
+      directory: ./dump
+    placeholders:
+      files:
+        - /opt/configs/application.properties
+    jars: 
+      - type: jdbc
+        file: /opt/driver/mssql-jdbc-13.2.0.jre11.jar
