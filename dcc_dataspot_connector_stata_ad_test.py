@@ -23,7 +23,7 @@ SERVICE_FILE_NAME = "myservice.yaml"
 SERVICE_NAME = "MyDatabaseService"
 
 # Configuration constants on github
-WORKDIR_FOLDER_IN_GITHUB = "stata-ad-test"
+WORKDIR_FOLDER_IN_GITHUB = "stata-ad-test" # Also used for Docker image name
 APPLICATION_FILE_NAME = "application.yaml"
 
 default_args = {
