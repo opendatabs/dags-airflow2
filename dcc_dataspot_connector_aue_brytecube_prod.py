@@ -29,7 +29,7 @@ APPLICATION_FILE_NAME = "application.yaml"
 default_args = {
     "owner": "renato.farruggio",
     "depends_on_past": False,
-    "start_date": datetime(2026, 01, 21),
+    "start_date": datetime(2026, 1, 21),
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
