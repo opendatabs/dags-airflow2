@@ -79,7 +79,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 CONTAINER_NAME = "dcc_dataspot_connector_fd_itbs_kdm"
 
 # Configuration constants local
-EXECUTABLE_CONNECTOR_JAR_FILE = "dataspot-connector-2025.1.3.jar"
+EXECUTABLE_CONNECTOR_JAR_FILE = "dataspot-connector-2026.1.0.jar"
 SHARED_FOLDER_IN_DATA_EXCH = "FD-ITBS-KDM"
 SERVICE_FILE_NAME = "myservice.yaml"
 SERVICE_NAME = "KDMDatabaseService"
