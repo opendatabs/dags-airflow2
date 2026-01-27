@@ -1,8 +1,8 @@
 """
 # dcc_dataspot_connector_stata_ad_test
-This DAG runs the Dataspot connector for StatA test database - with AD authentication.
+This DAG runs the Dataspot connector for AUE BryteCube Prod - with AD authentication.
 
-- Connects to StatA test database using AD authentication (not Azure!)
+- Connects to AUE BryteCube Prod database using AD authentication (not Azure!)
 - Executes data extraction using Dataspot connector
 """
 
@@ -29,7 +29,7 @@ APPLICATION_FILE_NAME = "application.yaml"
 default_args = {
     "owner": "renato.farruggio",
     "depends_on_past": False,
-    "start_date": datetime(2025, 10, 27),
+    "start_date": datetime(2026, 1, 21),
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
