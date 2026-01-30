@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+from airflow.operators.bash import BashOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
@@ -28,7 +29,7 @@ default_args = {
     "email_on_failure": True,
     "email_on_retry": False,
     "retries": 0,
-    "retry_delay": timedelta(minutes=5),
+    "retry_delay": timedelta(minutes=3),
 }
 
 with DAG(
@@ -39,6 +40,14 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    # Cleanup task to remove any old containers at the beginning
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command=f'''
+            docker rm -f {DAG_ID} 2>/dev/null || true
+            ''',
+    )
 
     # Main task to run the script
     upload = FailureTrackingDockerOperator(
@@ -69,3 +78,6 @@ with DAG(
             ),
         ],
     )
+
+    # Set the task dependency
+    cleanup_containers >> upload
