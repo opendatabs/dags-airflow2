@@ -19,7 +19,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 DAG_ID = "staka_gutachten"
 FAILURE_THRESHOLD = 1
 EXECUTION_TIMEOUT = timedelta(minutes=3)
-SCHEDULE = "*/5 * * * *"
+SCHEDULE = "0 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
