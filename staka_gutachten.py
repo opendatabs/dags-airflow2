@@ -60,7 +60,16 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
-        private_environment=COMMON_ENV_VARS,
+        private_environment={
+            **COMMON_ENV_VARS,
+            "SHAREPOINT_TENANT_ID": Variable.get("SHAREPOINT_TENANT_ID"),
+            "SHAREPOINT_CLIENT_ID": Variable.get("SHAREPOINT_CLIENT_ID"),
+            "SHAREPOINT_HOST": Variable.get("SHAREPOINT_HOST"),
+            "SHAREPOINT_SITE_NAME_STAKA_GUTACHTEN": Variable.get("SHAREPOINT_SITE_NAME_STAKA_GUTACHTEN"),
+            "SHAREPOINT_CERT_PATH": Variable.get("SHAREPOINT_CERT_PATH"),
+            "SHAREPOINT_THUMBPRINT": Variable.get("SHAREPOINT_THUMBPRINT"),
+
+        },
         container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
