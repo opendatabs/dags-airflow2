@@ -81,13 +81,18 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/PD-Staka-Gutachten",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data_orig",
                 target="/code/data_orig",
                 type="bind",
             ),
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
+                type="bind",
+            ),
+            Mount(
+                source=Variable.get("PATH_TO_CERTS"),
+                target="/certs",
                 type="bind",
             ),
         ],
