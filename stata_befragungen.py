@@ -59,6 +59,16 @@ with DAG(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/55plus_OGD",
                 target="/code/data/55plus",
                 type="bind",
+            ),           
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Bevoelkerungsbefragung_Ablage_StatA",
+                target="/code/data_orig/Bevoelkerung",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Bevoelkerungsbefragung_OGD",
+                target="/code/data/Bevoelkerung",
+                type="bind",
             ),
         ],
     )
