@@ -10,10 +10,16 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "kapo_eventverkehr_stjakob"
+FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
+EXECUTION_TIMEOUT = timedelta(minutes=4)
+SCHEDULE = "*/5 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -27,29 +33,31 @@ default_args = {
 }
 
 with DAG(
-    "kapo_eventverkehr_stjakob",
+    dag_id=DAG_ID,
     default_args=default_args,
-    description="Run the kapo_eventverkehr_stjakob docker container",
-    schedule="*/5 * * * *",
+    description=f"Run the {DAG_ID} docker container",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/kapo_eventverkehr_stjakob:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name="kapo_eventverkehr_stjakob",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/kapo_eventverkehr_stjakob/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -59,7 +67,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/kapo_eventverkehr_stjakob/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
