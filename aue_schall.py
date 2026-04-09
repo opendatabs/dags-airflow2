@@ -9,10 +9,16 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "aue_schall"
+FAILURE_THRESHOLD = 2  # Skip first 2 failures, fail on the 3rd failure
+EXECUTION_TIMEOUT = timedelta(minutes=10)
+SCHEDULE = "*/15 * * * *"
 
 default_args = {
     "owner": "jonas.bieri",
@@ -26,16 +32,16 @@ default_args = {
 }
 
 with DAG(
-    "aue_schall",
-    description="Run the aue_schall docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule="*/15 * * * *",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/aue_schall:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
@@ -47,13 +53,15 @@ with DAG(
             "FTP_PASS_04": Variable.get("FTP_PASS_04"),
             "ODS_PUSH_URL_100087": Variable.get("ODS_PUSH_URL_100087"),
         },
-        container_name="aue_schall",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/aue_schall/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             )
