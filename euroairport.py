@@ -9,10 +9,16 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
+
+# DAG configuration
+DAG_ID = "euroairport"
+FAILURE_THRESHOLD = 0  # Immediate failure with no skipping
+EXECUTION_TIMEOUT = timedelta(minutes=10)
+SCHEDULE = "*/15 5-8 * * *"
 
 default_args = {
     "owner": "jonas.bieri",
@@ -26,16 +32,16 @@ default_args = {
 }
 
 with DAG(
-    "euroairport",
+    dag_id=DAG_ID,
     default_args=default_args,
-    description="Run the euroairport docker container",
-    schedule="*/15 5-8 * * *",
+    description=f"Run the {DAG_ID} docker container",
+    schedule_interval=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/euroairport:latest",
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
@@ -46,13 +52,15 @@ with DAG(
             "FTP_USER_06": Variable.get("FTP_USER_06"),
             "FTP_PASS_06": Variable.get("FTP_PASS_06"),
         },
-        container_name="euroairport",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/euroairport/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -78,7 +86,7 @@ with DAG(
         mount_tmp_dir=False,
         command="uv run -m etl_id 100078",
         private_environment=COMMON_ENV_VARS,
-        container_name="euroairport--ods_publish",
+        container_name=f"{DAG_ID}--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
