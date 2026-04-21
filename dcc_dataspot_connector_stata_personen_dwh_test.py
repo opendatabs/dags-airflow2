@@ -52,7 +52,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command=f"java -Dfile.encoding=UTF-8 -jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
+        command=f"java -jar /opt/executable/{EXECUTABLE_CONNECTOR_JAR_FILE} --service={SERVICE_NAME} --file=/opt/configs/{SERVICE_FILE_NAME}",
         private_environment=COMMON_ENV_VARS,
         container_name=CONTAINER_NAME,
         docker_url="unix://var/run/docker.sock",
