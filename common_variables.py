@@ -14,4 +14,5 @@ COMMON_ENV_VARS = {
     "FTP_USER": Variable.get("FTP_USER"),
     "FTP_PASS": Variable.get("FTP_PASS"),
     "ODS_API_KEY": Variable.get("ODS_API_KEY"),
+    "HUWISE_API_KEY": Variable.get("HUWISE_API_KEY"),
 }
