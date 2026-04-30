@@ -1,8 +1,5 @@
 """
 # fgi_stac
-This DAG updates the following datasets:
-
-- [100395](https://data.bs.ch/explore/dataset/100395)
 """
 
 from datetime import datetime, timedelta
@@ -74,7 +71,7 @@ with DAG(
         mounts=[
             Mount(
                 source="/mnt/OGD-DataExch/StatA/FGI/STAC",
-                target="/code/data/datasets",
+                target="/code/data",
                 type="bind",
             ),
             Mount(
