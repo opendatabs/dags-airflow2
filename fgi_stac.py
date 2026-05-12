@@ -58,6 +58,7 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
+            "API_KEY_MAPBS": Variable.get("API_KEY_MAPBS"),
             "DATASPOT_EXPOSED_CLIENT_ID": Variable.get("DATASPOT_EXPOSED_CLIENT_ID"),
             "DATASPOT_TENANT_ID": Variable.get("DATASPOT_TENANT_ID"),
             "DATASPOT_CLIENT_ID": Variable.get("DATASPOT_CLIENT_ID"),
