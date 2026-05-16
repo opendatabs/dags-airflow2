@@ -41,7 +41,7 @@ with DAG(
     CONTAINER_NAME,
     default_args=default_args,
     description=f"Run {CONTAINER_NAME}",
-    schedule=None,  # TODO: Enable schedule when ready: "0 4 * * *"  # Run daily at 4 AM
+    schedule="0 3 * * 1",
     catchup=False,
 ) as dag:
     
