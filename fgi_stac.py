@@ -24,8 +24,8 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 DAG_ID = "fgi_stac"
 FAILURE_THRESHOLD = 1  # Skip first failure, fail on second.
-EXECUTION_TIMEOUT = timedelta(minutes=90)
-SCHEDULE = "0 */4 * * *"
+EXECUTION_TIMEOUT = timedelta(minutes=1440)
+SCHEDULE = None
 
 TASK_IDS = ("sync_catalog", "prepare_assets", "publish")
 
