@@ -61,3 +61,33 @@ with DAG(
             ),
         ],
     )
+
+    rsync = DockerOperator(
+        task_id="rsync",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        command="python3 -m rsync.sync_files mobilitaet_mikromobilitaet.json",
+        container_name="mobilitaet_mikromobilitaet_stats--rsync",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source=PATH_TO_CODE, target="/code", type="bind"),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/BVD-MOB/Mikromobilitaet/datasette",
+                target="/code/data",
+                type="bind",
+            ),
+        ],
+    )
+
+    process_upload >> rsync
+    
