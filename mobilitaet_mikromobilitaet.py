@@ -11,6 +11,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.models.dagrun import DagRun
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
@@ -53,6 +54,13 @@ with DAG(
 ) as dag:
     dag.doc_md = __doc__
 
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command=f'''
+            docker rm -f {DAG_ID} 2>/dev/null || true
+            ''',
+    )
+
     manual_trigger_check = PythonOperator(
         task_id="manual_trigger_check",
         python_callable=check_manual_triggering,
@@ -87,4 +95,4 @@ with DAG(
         ],
     )
 
-    manual_trigger_check >> process_upload
+    cleanup_containers >> manual_trigger_check >> process_upload

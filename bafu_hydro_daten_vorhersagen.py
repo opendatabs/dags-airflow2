@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
@@ -40,6 +41,14 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command=f'''
+            docker rm -f {DAG_ID} 2>/dev/null || true
+            ''',
+    )
+
     upload = FailureTrackingDockerOperator(
         task_id="upload",
         image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
@@ -73,3 +82,5 @@ with DAG(
             ),
         ],
     )
+
+    cleanup_containers >> upload

@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
@@ -34,6 +35,15 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+            docker rm -f meteoblue_wolf 2>/dev/null || true
+            docker rm -f meteoblue_wolf--ods_publish 2>/dev/null || true
+            ''',
+    )
+
     process_upload = DockerOperator(
         task_id="process-upload",
         image="ghcr.io/opendatabs/data-processing/meteoblue_wolf:latest",
@@ -77,4 +87,4 @@ with DAG(
         tty=True,
     )
 
-    process_upload >> ods_publish
+    cleanup_containers >> process_upload >> ods_publish

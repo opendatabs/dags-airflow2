@@ -47,6 +47,7 @@ with DAG(
         container_name="kapo_smileys--upload",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
+        mem_limit="12g",
         tty=True,
         mounts=[
             Mount(

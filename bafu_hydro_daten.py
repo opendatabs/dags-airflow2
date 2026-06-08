@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
@@ -33,6 +34,14 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+            docker rm -f bafu_hydrodaten 2>/dev/null || true
+            ''',
+    )
+
     upload = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/bafu_hydrodaten:latest",
@@ -72,3 +81,5 @@ with DAG(
             ),
         ],
     )
+
+    cleanup_containers >> upload

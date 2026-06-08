@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
@@ -35,6 +36,14 @@ with DAG(
     dagrun_timeout=timedelta(minutes=8),
 ) as dag:
     dag.doc_md = __doc__
+
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+            docker rm -f aue_rues--upload 2>/dev/null || true
+            ''',
+    )
+
     upload_bag_datasets = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/aue_rues:latest",
@@ -62,3 +71,5 @@ with DAG(
             )
         ],
     )
+
+    cleanup_containers >> upload_bag_datasets
