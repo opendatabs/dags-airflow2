@@ -2,7 +2,7 @@
 # staka_verz_verf_persdat.py
 This DAG helps populating the following datasets:
 
-[100520](https://data.bs.ch/explore/dataset/100520)
+[100520_deprecated](https://data.bs.ch/explore/dataset/100520_deprecated)
 """
 
 from datetime import datetime, timedelta
