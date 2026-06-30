@@ -28,7 +28,7 @@ default_args = {
     "depend_on_past": False,
     "start_date": datetime(2026, 6, 9),
     "email": Variable.get("EMAIL_RECEIVERS"),
-    "email_on_failure": False,
+    "email_on_failure": True,
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=3),
