@@ -26,21 +26,13 @@ default_args = {
     "retry_delay": timedelta(minutes=15),
 }
 
-def _set_upload_timeout(context):
-    """Mon–Thu: 10h overnight. Fri: run through Monday morning (~58h)."""
-    # data_interval_end is the scheduled start time for this run
-    if context["data_interval_end"].weekday() == 4:  # Friday
-        context["task"].execution_timeout = timedelta(hours=58)  # Fri 20:00 → Mon 06:00
-    else:
-        context["task"].execution_timeout = timedelta(hours=10)  # 20:00 → 06:00
-
 
 with DAG(
     "parlamentsdienst_grosserrat_datasette",
     default_args=default_args,
     description="Run the parlamentsdienst_grosserrat_datasette docker container",
     # Mon–Fri at 20:00 (weekend covered by Friday's long run)
-    schedule="0 20 * * 1-5",
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -52,9 +44,6 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="uv run -m etl",
-        # Default; overridden in pre_execute for Friday weekend runs
-        execution_timeout=timedelta(hours=10),
-        pre_execute=_set_upload_timeout,
         private_environment={
             **COMMON_ENV_VARS,
             "HTTP_PROXY":  Variable.get("http_proxy"),
