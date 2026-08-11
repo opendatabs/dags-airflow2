@@ -126,7 +126,7 @@ with DAG(
 
     sync_catalog = fgi_stac_docker_task(
         task_id="sync_catalog",
-        command="sh -c 'update-ca-certificates || uv run sync_catalog.py",
+        command="sh -c 'update-ca-certificates || true; uv run sync_catalog.py",
     )
     prepare_assets = fgi_stac_docker_task(
         task_id="prepare_assets",
