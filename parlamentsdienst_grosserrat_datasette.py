@@ -43,18 +43,7 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        command=(
-            "bash -lc 'set -euo pipefail; update-ca-certificates || true; "
-            "HOST=$(python - <<\"PY\"\nimport os,urllib.parse as u;print(u.urlparse(os.environ[\"DOCLING_HTTP_CLIENT\"]).hostname)\nPY\n); "
-            "IP=$(getent hosts $HOST | awk \"{print \\$1}\" | head -1 || true); "
-            "for v in no_proxy NO_PROXY; do "
-            "  cur=${!v:-}; "
-            "  if [ -n \"$cur\" ]; then export $v=\"$cur,$HOST${IP:+,$IP}\"; else export $v=\"$HOST${IP:+,$IP}\"; fi; "
-            "done; "
-            "echo no_proxy=$no_proxy; echo NO_PROXY=$NO_PROXY; "
-            "curl -sv --http1.1 -H \"Accept-Encoding: identity\" \"$DOCLING_HTTP_CLIENT/health\" >/dev/null; "
-            "uv run -m etl'"
-        ),
+        command="sh -c 'update-ca-certificates || true; uv run -m etl'",
         private_environment={
             **COMMON_ENV_VARS,
             "HTTP_PROXY":  Variable.get("http_proxy"),
