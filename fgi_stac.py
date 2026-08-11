@@ -22,6 +22,10 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
+PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
+CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
+CA_PKI_FILENAME = Variable.get("CA_PKI_FILENAME")
+
 DAG_ID = "fgi_stac"
 FAILURE_THRESHOLD = 1  # Skip first failure, fail on second.
 EXECUTION_TIMEOUT = timedelta(minutes=55)
@@ -48,9 +52,24 @@ FGI_STAC_ENV = {
     "DATASPOT_CLIENT_ID": Variable.get("DATASPOT_CLIENT_ID"),
     "DATASPOT_CLIENT_SECRET": Variable.get("DATASPOT_CLIENT_SECRET"),
     "DATASPOT_SERVICE_USER_ACCESS_KEY": Variable.get("DATASPOT_SERVICE_USER_ACCESS_KEY"),
+    "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
+    "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
+    "PERL_LWP_SSL_CA_FILE": "/etc/ssl/certs/ca-certificates.crt",
+    "REQUESTS_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
+    "SSL_CERT_FILE": "/etc/ssl/certs/ca-certificates.crt",
 }
 
 FGI_STAC_MOUNTS = [
+    Mount(
+        source=f"{PATH_TO_LOCAL_CERTS}{CA_ZID_FILENAME}",
+        target=f"/usr/local/share/ca-certificates/{CA_ZID_FILENAME}",
+        type="bind",
+    ),
+    Mount(
+        source=f"{PATH_TO_LOCAL_CERTS}{CA_PKI_FILENAME}",
+        target=f"/usr/local/share/ca-certificates/{CA_PKI_FILENAME}",
+        type="bind",
+    ),
     Mount(
         source="/mnt/OGD-DataExch/StatA/FGI/STAC",
         target="/code/data",
@@ -107,7 +126,7 @@ with DAG(
 
     sync_catalog = fgi_stac_docker_task(
         task_id="sync_catalog",
-        command="uv run sync_catalog.py",
+        command="sh -c 'update-ca-certificates || uv run sync_catalog.py",
     )
     prepare_assets = fgi_stac_docker_task(
         task_id="prepare_assets",
