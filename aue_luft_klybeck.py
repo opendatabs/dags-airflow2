@@ -62,6 +62,7 @@ with DAG(
         command="uv run -m etl",
         private_environment={
             **COMMON_ENV_VARS,
+            "API_KEY_DECENTLAB": Variable.get("API_KEY_DECENTLAB"),
             "SHAREPOINT_TENANT_ID": Variable.get("SHAREPOINT_TENANT_ID"),
             "SHAREPOINT_CLIENT_ID": Variable.get("SHAREPOINT_CLIENT_ID"),
             "SHAREPOINT_HOST": Variable.get("SHAREPOINT_HOST"),
