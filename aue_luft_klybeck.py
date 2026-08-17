@@ -82,7 +82,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/AUE/Klybeck",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data_orig",
                 target="/code/data_orig",
                 type="bind",
             ),
