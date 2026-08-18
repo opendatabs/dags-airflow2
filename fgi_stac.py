@@ -130,7 +130,7 @@ with DAG(
     )
     prepare_assets = fgi_stac_docker_task(
         task_id="prepare_assets",
-        command="uv run prepare_assets.py",
+        command="sh -c 'update-ca-certificates || true; uv run prepare_assets.py'",
     )
     publish = fgi_stac_docker_task(
         task_id="publish",
