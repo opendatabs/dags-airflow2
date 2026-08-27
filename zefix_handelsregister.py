@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from airflow.operators.bash import BashOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
@@ -22,7 +23,7 @@ default_args = {
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
-    "retries": 0,
+    "retries": 5,
     "retry_delay": timedelta(minutes=15),
 }
 
@@ -34,6 +35,15 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+
+    # Cleanup task to remove any old containers at the beginning
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command='''
+        docker rm -f zefix_handelsregister 2>/dev/null || true
+        ''',
+    )
+
     upload = DockerOperator(
         task_id="upload",
         image="ghcr.io/opendatabs/data-processing/zefix_handelsregister:latest",
@@ -60,3 +70,6 @@ with DAG(
             ),
         ],
     )
+
+    # Set the task dependency
+    cleanup_containers >> upload
