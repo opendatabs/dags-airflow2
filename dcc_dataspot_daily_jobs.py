@@ -41,6 +41,7 @@ with DAG(
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_law_ch 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_law_bs 2>/dev/null || true
+        docker rm -f dcc_dataspot_refresh_vvp_legal_basis_status 2>/dev/null || true
         ''',
     )
     
@@ -139,6 +140,22 @@ with DAG(
         network_mode="bridge",
         tty=True,
     )
+
+    # Seventh task: refresh VVP legal basis status
+    refresh_vvp_legal_basis_status = DockerOperator(
+        task_id="refresh_vvp_legal_basis_status",
+        image="ghcr.io/dcc-bs/dataspot:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        private_environment=dataspot_env,
+        command="python -m scripts.refresh_vvp_legal_basis_status",
+        container_name="dcc_dataspot_refresh_vvp_legal_basis_status",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
     
     # Set the task dependency
     (
@@ -148,4 +165,5 @@ with DAG(
         >> sync_ods_datasets
         >> sync_law_ch
         >> sync_law_bs
+        >> refresh_vvp_legal_basis_status
     )
