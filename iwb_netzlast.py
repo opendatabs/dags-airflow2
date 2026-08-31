@@ -39,6 +39,7 @@ with DAG(
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
+    
     upload = DockerOperator(
         task_id="upload",
         image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
@@ -48,7 +49,7 @@ with DAG(
         mount_tmp_dir=False,
         command="uv run -m etl",
         private_environment=COMMON_ENV_VARS,
-        container_name=f"{DAG_ID}--upload",
+        container_name=DAG_ID",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -65,6 +66,13 @@ with DAG(
                 type="bind",
             ),
         ],
+    )
+
+    cleanup_containers = BashOperator(
+        task_id="cleanup_old_containers",
+        bash_command=f'''
+            docker rm -f {DAG_ID}--fit_model 2>/dev/null || true
+            ''',
     )
 
     fit_model = DockerOperator(
@@ -95,4 +103,4 @@ with DAG(
         ],
     )
 
-    upload >> fit_model
+    upload >> cleanup_containers >> fit_model
