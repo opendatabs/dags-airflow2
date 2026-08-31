@@ -71,7 +71,7 @@ with DAG(
     cleanup_containers = BashOperator(
         task_id="cleanup_old_containers",
         bash_command=f'''
-            docker rm -f {DAG_ID}--fit_model 2>/dev/null || true
+            docker rm -f "{DAG_ID}--fit_model" 2>/dev/null || true
             ''',
     )
 
