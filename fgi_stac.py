@@ -130,11 +130,11 @@ with DAG(
     )
     prepare_assets = fgi_stac_docker_task(
         task_id="prepare_assets",
-        command="uv run prepare_assets.py",
+        command="sh -c 'update-ca-certificates || true; uv run prepare_assets.py'",
     )
     publish = fgi_stac_docker_task(
         task_id="publish",
-        command="uv run publish.py",
+        command="sh -c 'update-ca-certificates || true; uv run publish.py'",
     )
 
     cleanup_containers >> sync_catalog >> prepare_assets >> publish
