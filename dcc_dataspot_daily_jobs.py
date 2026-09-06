@@ -39,7 +39,8 @@ with DAG(
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_dataset_compositions 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
-        docker rm -f dcc_dataspot_sync_law_ch 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_law_fedlex_domestic 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_law_fedlex_international 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_law_bs 2>/dev/null || true
         docker rm -f dcc_dataspot_refresh_vvp_legal_basis_status 2>/dev/null || true
         ''',
@@ -109,23 +110,39 @@ with DAG(
         tty=True,
     )
 
-    # Fifth task: sync Swiss law collection
-    sync_law_ch = DockerOperator(
-        task_id="sync_law_ch",
+    # Fifth task: sync Fedlex domestic law collection
+    sync_law_fedlex_domestic = DockerOperator(
+        task_id="sync_law_fedlex_domestic",
         image="ghcr.io/dcc-bs/dataspot:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
         private_environment=dataspot_env,
-        command="python -m scripts.sync_law_ch",
-        container_name="dcc_dataspot_sync_law_ch",
+        command="python -m scripts.sync_law_fedlex_domestic",
+        container_name="dcc_dataspot_sync_law_fedlex_domestic",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
     )
 
-    # Sixth task: sync Basel-Stadt law collection
+    # Sixth task: sync Fedlex international law collection
+    sync_law_fedlex_international = DockerOperator(
+        task_id="sync_law_fedlex_international",
+        image="ghcr.io/dcc-bs/dataspot:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        private_environment=dataspot_env,
+        command="python -m scripts.sync_law_fedlex_international",
+        container_name="dcc_dataspot_sync_law_fedlex_international",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
+
+    # Seventh task: sync Basel-Stadt law collection
     sync_law_bs = DockerOperator(
         task_id="sync_law_bs",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -141,7 +158,7 @@ with DAG(
         tty=True,
     )
 
-    # Seventh task: refresh VVP legal basis status
+    # Eighth task: refresh VVP legal basis status
     refresh_vvp_legal_basis_status = DockerOperator(
         task_id="refresh_vvp_legal_basis_status",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -163,7 +180,8 @@ with DAG(
         >> sync_org_structures 
         >> sync_ods_dataset_compositions 
         >> sync_ods_datasets
-        >> sync_law_ch
+        >> sync_law_fedlex_domestic
+        >> sync_law_fedlex_international
         >> sync_law_bs
         >> refresh_vvp_legal_basis_status
     )
