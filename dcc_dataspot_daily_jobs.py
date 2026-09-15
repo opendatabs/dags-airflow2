@@ -37,6 +37,7 @@ with DAG(
         task_id="cleanup_old_containers",
         bash_command='''
         docker rm -f dcc_dataspot_sync_org_structures 2>/dev/null || true
+        docker rm -f dcc_dataspot_sync_ods_restricted_datasets 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_dataset_compositions 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_ods_datasets 2>/dev/null || true
         docker rm -f dcc_dataspot_sync_law_fedlex_domestic 2>/dev/null || true
@@ -77,8 +78,24 @@ with DAG(
         network_mode="bridge",
         tty=True,
     )
+
+    # Third task: sync ODS restricted datasets
+    sync_ods_restricted_datasets = DockerOperator(
+        task_id="sync_ods_restricted_datasets",
+        image="ghcr.io/dcc-bs/dataspot:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        private_environment=dataspot_env,
+        command="python -m scripts.sync_ods_restricted_datasets",
+        container_name="dcc_dataspot_sync_ods_restricted_datasets",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+    )
     
-    # Third task: sync ODS dataset compositions
+    # Fourth task: sync ODS dataset compositions
     sync_ods_dataset_compositions = DockerOperator(
         task_id="sync_ods_dataset_compositions",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -94,7 +111,7 @@ with DAG(
         tty=True,
     )
 
-    # Fourth task: sync ODS datasets
+    # Fifth task: sync ODS datasets
     sync_ods_datasets = DockerOperator(
         task_id="sync_ods_datasets",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -110,7 +127,7 @@ with DAG(
         tty=True,
     )
 
-    # Fifth task: sync Fedlex domestic law collection
+    # Sixth task: sync Fedlex domestic law collection
     sync_law_fedlex_domestic = DockerOperator(
         task_id="sync_law_fedlex_domestic",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -126,7 +143,7 @@ with DAG(
         tty=True,
     )
 
-    # Sixth task: sync Fedlex international law collection
+    # Seventh task: sync Fedlex international law collection
     sync_law_fedlex_international = DockerOperator(
         task_id="sync_law_fedlex_international",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -142,7 +159,7 @@ with DAG(
         tty=True,
     )
 
-    # Seventh task: sync Basel-Stadt law collection
+    # Eighth task: sync Basel-Stadt law collection
     sync_law_bs = DockerOperator(
         task_id="sync_law_bs",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -158,7 +175,7 @@ with DAG(
         tty=True,
     )
 
-    # Eighth task: refresh VVP legal basis status
+    # Ninth task: refresh VVP legal basis status
     refresh_vvp_legal_basis_status = DockerOperator(
         task_id="refresh_vvp_legal_basis_status",
         image="ghcr.io/dcc-bs/dataspot:latest",
@@ -178,6 +195,7 @@ with DAG(
     (
         cleanup_containers 
         >> sync_org_structures 
+        >> sync_ods_restricted_datasets
         >> sync_ods_dataset_compositions 
         >> sync_ods_datasets
         >> sync_law_fedlex_domestic
