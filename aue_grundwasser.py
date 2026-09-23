@@ -60,7 +60,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/aue_grundwasser/data_orig",
+                source="/mnt/OGD-DataExch/StatA/AUE/Grundwasser",
                 target="/code/data_orig",
                 type="bind",
             ),
