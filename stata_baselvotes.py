@@ -18,7 +18,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 DAG_ID = "stata_baselvotes"
 FAILURE_THRESHOLD = 1
 EXECUTION_TIMEOUT = timedelta(minutes=3)
-SCHEDULE = "0 * * * *"
+SCHEDULE = "15 18 * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
