@@ -55,7 +55,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source="/mnt/OGD-DataExch/StatA/Wahlen-Abstimmungen",
+                source="/mnt/OGD-DataExch/StatA/Wahlen-Abstimmungen/Gerichtswahlen/2026-09",
                 target="/code/data_orig",
                 type="bind",
             ),
