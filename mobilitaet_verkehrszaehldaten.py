@@ -15,9 +15,16 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
+from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
 from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
+
+# DAG configuration
+DAG_ID = "mobilitaet_verkehrszaehldaten"
+FAILURE_THRESHOLD = 1
+EXECUTION_TIMEOUT = timedelta(minutes=60)
+SCHEDULE = "0 6 * * *"
 
 default_args = {
     "owner": "jonas.bieri",
@@ -31,16 +38,18 @@ default_args = {
 }
 
 with DAG(
-    "mobilitaet_verkehrszaehldaten",
-    description="Run the mobilitaet_verkehrszaehldaten docker container",
+    dag_id=DAG_ID,
+    description=f"Run the {DAG_ID} docker container",
     default_args=default_args,
-    schedule="0 6 * * *",
+    schedule=SCHEDULE,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
-    upload = DockerOperator(
+    upload = FailureTrackingDockerOperator(
         task_id="upload",
-        image="ghcr.io/opendatabs/data-processing/mobilitaet_verkehrszaehldaten:latest",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
+        image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
@@ -51,13 +60,13 @@ with DAG(
             "FTP_USER_09": Variable.get("FTP_USER_09"),
             "FTP_PASS_09": Variable.get("FTP_PASS_09"),
         },
-        container_name="mobilitaet_verkehrszaehldaten",
+        container_name=DAG_ID,
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
         mounts=[
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_verkehrszaehldaten/data",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/data",
                 target="/code/data",
                 type="bind",
             ),
@@ -67,7 +76,7 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"{PATH_TO_CODE}/data-processing/mobilitaet_verkehrszaehldaten/change_tracking",
+                source=f"{PATH_TO_CODE}/data-processing/{DAG_ID}/change_tracking",
                 target="/code/change_tracking",
                 type="bind",
             ),
@@ -83,7 +92,7 @@ with DAG(
         mount_tmp_dir=False,
         command="uv run -m etl_id 100006,100013,100356",
         private_environment=COMMON_ENV_VARS,
-        container_name="mobilitaet_verkehrszaehldaten--ods_publish",
+        container_name=f"{DAG_ID}--ods_publish",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
@@ -97,7 +106,7 @@ with DAG(
         auto_remove="force",
         mount_tmp_dir=False,
         command="python3 -m rsync.sync_files mobilitaet_verkehrszaehldaten.json",
-        container_name="mobilitaet_verkehrszaehldaten--rsync",
+        container_name=f"{DAG_ID}--rsync",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
         tty=True,
