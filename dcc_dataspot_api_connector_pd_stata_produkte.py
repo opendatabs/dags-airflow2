@@ -63,8 +63,11 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
+        mounts=[
+            "/data/airflow/kerberos_setup.sh:/tmp/kerberos_setup.sh:ro"
+        ],
+        command="sh -c '/tmp/kerberos_setup.sh && python -m scripts.databases_via_api.import_stata_produkte'",
         private_environment=dataspot_env,
-        command="python -m scripts.databases_via_api.import_stata_produkte",
         container_name="dcc_dataspot_api_connector_pd_stata_produkte",
         docker_url="unix://var/run/docker.sock",
         network_mode="bridge",
