@@ -1,5 +1,6 @@
 """
 # dcc_dataspot_api_connector_pd_stata_produkte
+Note: Kerberos stuff not needed here, but left in - commented out - for future reference
 """
 
 from datetime import datetime, timedelta
@@ -52,7 +53,11 @@ with DAG(
         "DATASPOT_SERVICE_USER_ACCESS_KEY": Variable.get("DATASPOT_SERVICE_USER_ACCESS_KEY"),
         "STATA_PRODUKTE_SERVERNAME": Variable.get("STATA_PRODUKTE_SERVERNAME"),
         "STATA_PRODUKTE_USERNAME": Variable.get("STATA_PRODUKTE_USERNAME"),
-        "STATA_PRODUKTE_PASSWORD": Variable.get("STATA_PRODUKTE_PASSWORD")
+        "STATA_PRODUKTE_PASSWORD": Variable.get("STATA_PRODUKTE_PASSWORD"),
+        #"AD_USERNAME": Variable.get("DB_AD_USERNAME"),
+        #"AD_PASSWORD": Variable.get("SOME-DB_AD_PASSWORD"),
+        #"AD_DOMAIN_CONTROLLER": Variable.get("AD_DOMAIN_CONTROLLER"),
+        #"AD_REALM": Variable.get("AD_REALM")
     }
     
     # Run Script
@@ -63,10 +68,15 @@ with DAG(
         api_version="auto",
         auto_remove="force",
         mount_tmp_dir=False,
-        mounts=[
-            "/data/airflow/kerberos_setup.sh:/tmp/kerberos_setup.sh:ro"
-        ],
-        command="sh -c '/tmp/kerberos_setup.sh && python -m scripts.databases_via_api.import_stata_produkte'",
+        #mounts=[
+        #    Mount(
+        #        source=f"/data/airflow/kerberos_setup.sh",
+        #        target="/tmp/kerberos_setup.sh",
+        #        type="bind",
+        #    ),
+        #],
+        #command="sh -c '/tmp/kerberos_setup.sh && python -m scripts.databases_via_api.import_stata_produkte'",
+        command="python -m scripts.databases_via_api.import_stata_produkte",
         private_environment=dataspot_env,
         container_name="dcc_dataspot_api_connector_pd_stata_produkte",
         docker_url="unix://var/run/docker.sock",
