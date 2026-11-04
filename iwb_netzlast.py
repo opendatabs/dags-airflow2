@@ -78,7 +78,7 @@ with DAG(
 
     fit_model = DockerOperator(
         task_id="fit_model",
-        image="ghcr.io/opendatabs/stata_erwarteter_stromverbrauch:latest",
+        image="ghcr.io/statabs/erwarteter_stromverbrauch:latest",
         force_pull=True,
         api_version="auto",
         auto_remove="force",
