@@ -27,7 +27,7 @@ with DAG(
     "stata_befragungen",
     description="Run the stata_befragungen docker container",
     default_args=default_args,
-    schedule="5,35 * * * *",
+    schedule=None,
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
@@ -95,6 +95,11 @@ with DAG(
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/stata_befragungen/data/datasette",
                 target="/code/data/datasette",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Bevoelkerungsbefragung_OGD",
+                target="/code/data/Bevoelkerung",
                 type="bind",
             ),
         ],
