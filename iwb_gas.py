@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.docker.operators.docker import DockerOperator
 from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 from docker.types import Mount
 
@@ -19,7 +18,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 # DAG configuration
 DAG_ID = "iwb_gas"
-FAILURE_THRESHOLD = 1
+FAILURE_THRESHOLD = 9  # Skip first 9 failures, fail on the 10th consecutive failure
 EXECUTION_TIMEOUT = timedelta(minutes=60)
 SCHEDULE = "0 13 * * *"
 
@@ -30,7 +29,7 @@ default_args = {
     "email": Variable.get("EMAIL_RECEIVERS"),
     "email_on_failure": True,
     "email_on_retry": False,
-    "retries": 0,
+    "retries": 5,
     "retry_delay": timedelta(minutes=15),
 }
 
@@ -75,8 +74,10 @@ with DAG(
         ],
     )
 
-    fit_model = DockerOperator(
+    fit_model = FailureTrackingDockerOperator(
         task_id="fit_model",
+        failure_threshold=FAILURE_THRESHOLD,
+        execution_timeout=EXECUTION_TIMEOUT,
         image="ghcr.io/statabs/erwarteter_gasverbrauch:latest",
         force_pull=True,
         api_version="auto",
