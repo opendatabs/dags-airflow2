@@ -1,5 +1,5 @@
 """
-# bafu_hydro_daten
+# bafu_hydro_daten_vorhersagen
 This DAG updates the following datasets:
 
 - [100271](https://data.bs.ch/explore/dataset/100271)
