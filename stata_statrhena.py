@@ -54,7 +54,12 @@ with DAG(
         tty=True,
         mounts=[
             Mount(
-                source="/mnt/OGD-DataExch",
+                source="/mnt/OGD-DataExch/StatA/StatRhena/Ablage StatA",
+                target="/code/data_orig",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/StatRhena/Generierte HTML-Dateien",
                 target="/code/data",
                 type="bind",
             ),
