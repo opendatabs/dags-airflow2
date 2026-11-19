@@ -21,7 +21,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 DAG_ID = "aue_luft_klybeck"
 FAILURE_THRESHOLD = 1
 EXECUTION_TIMEOUT = timedelta(minutes=10)
-SCHEDULE = "0 * * * *"
+SCHEDULE = "*/5 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
