@@ -63,6 +63,7 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "API_KEY_DECENTLAB": Variable.get("API_KEY_DECENTLAB"),
+            "AIRDB_API_KEY": Variable.get("AIRDB_API_KEY"),
             "SHAREPOINT_TENANT_ID": Variable.get("SHAREPOINT_TENANT_ID"),
             "SHAREPOINT_CLIENT_ID": Variable.get("SHAREPOINT_CLIENT_ID"),
             "SHAREPOINT_HOST": Variable.get("SHAREPOINT_HOST"),
