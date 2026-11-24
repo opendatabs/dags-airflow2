@@ -88,8 +88,13 @@ with DAG(
                 type="bind",
             ),
             Mount(
-                source=f"/mnt/OGD-DataExch/StatA/Parlament/text",
-                target="/code/data/text",
+                source=f"/mnt/OGD-DataExch/StatA/Parlament/docling",
+                target="/code/data/docling",
+                type="bind",
+            ),
+            Mount(
+                source=f"/mnt/OGD-DataExch/StatA/Parlament/images",
+                target="/code/data/images",
                 type="bind",
             ),
         ],
