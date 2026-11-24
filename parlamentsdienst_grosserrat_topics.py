@@ -52,7 +52,7 @@ with DAG(
             "HTTPS_PROXY": Variable.get("https_proxy"),
             "NO_PROXY": Variable.get("no_proxy"),
             "QWEN_EMBED_URL": Variable.get("QWEN_EMBED_URL"),
-            "QWEN_EMBED_MODEL": Variable.get("QWEN_EMBED_MODEL"),
+            "QWEN_EMBED_MODEL": "Qwen/Qwen3-Embedding-4B",
             "QWEN_EMBED_API_KEY": Variable.get("QWEN_EMBED_API_KEY", default_var=""),
             "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
             "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
