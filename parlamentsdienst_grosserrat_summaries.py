@@ -52,7 +52,7 @@ with DAG(
             "HTTP_PROXY": Variable.get("http_proxy"),
             "HTTPS_PROXY": Variable.get("https_proxy"),
             "NO_PROXY": Variable.get("no_proxy"),
-            "GEMMA_URL": Variable.get("GEMMA_URL"),
+            "GEMMA_URL": Variable.get("GEMMA_URL").replace(".intranet.", ".intranet.test.", 1),
             "GEMMA_MODEL": Variable.get("GEMMA_MODEL"),
             "GEMMA_API_KEY": Variable.get("GEMMA_API_KEY", default_var=""),
             "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
