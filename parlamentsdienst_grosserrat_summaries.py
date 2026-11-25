@@ -18,6 +18,10 @@ from common_variables import COMMON_ENV_VARS
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
 CA_PKI_FILENAME = Variable.get("CA_PKI_FILENAME")
+# Temporary, for trying out: the KIS test gateway until the Variable names it; a URL that already does is left as it is.
+GEMMA_URL = Variable.get("GEMMA_URL")
+if ".intranet.test." not in GEMMA_URL:
+    GEMMA_URL = GEMMA_URL.replace(".intranet.", ".intranet.test.", 1)
 
 default_args = {
     "owner": "thomas.gerig",
@@ -52,7 +56,7 @@ with DAG(
             "HTTP_PROXY": Variable.get("http_proxy"),
             "HTTPS_PROXY": Variable.get("https_proxy"),
             "NO_PROXY": Variable.get("no_proxy"),
-            "GEMMA_URL": Variable.get("GEMMA_URL").replace(".intranet.", ".intranet.test.", 1),
+            "GEMMA_URL": GEMMA_URL,
             "GEMMA_MODEL": Variable.get("GEMMA_MODEL"),
             "GEMMA_API_KEY": Variable.get("GEMMA_API_KEY", default_var=""),
             "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
