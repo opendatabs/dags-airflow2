@@ -3,7 +3,7 @@
 Builds the database the MCP server of the Grosser Rat reads, in Parlament/mcp/: corpus-mcp.db (index,
 graph, topics and the text of each document), vectors.db, vectors.faiss, release.json and failed.csv.
 Reads the Markdown and Docling JSON of parlamentsdienst_grosserrat_datasette, the topics.csv of
-parlamentsdienst_grosserrat_mcp and the extract.db of parlamentsdienst_grosserrat_summaries.
+parlamentsdienst_grosserrat_topics and the extract.db of parlamentsdienst_grosserrat_summaries.
 """
 
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
@@ -101,6 +101,11 @@ with DAG(
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Parlament/mcp",
                 target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_mcp/tmp",
+                target="/code/tmp",
                 type="bind",
             ),
         ],

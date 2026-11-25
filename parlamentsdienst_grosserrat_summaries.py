@@ -13,7 +13,7 @@ from airflow.models import Variable
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 
-from common_variables import COMMON_ENV_VARS
+from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 PATH_TO_LOCAL_CERTS = Variable.get("PATH_TO_LOCAL_CERTS")
 CA_ZID_FILENAME = Variable.get("CA_ZID_FILENAME")
@@ -101,6 +101,11 @@ with DAG(
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Parlament/summaries",
                 target="/code/data",
+                type="bind",
+            ),
+            Mount(
+                source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_summaries/tmp",
+                target="/code/tmp",
                 type="bind",
             ),
         ],
