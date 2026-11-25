@@ -70,6 +70,16 @@ with DAG(
                 target="/code/data/Bevoelkerung",
                 type="bind",
             ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Jugendbefragung_Ablage_StatA",
+                target="/code/data_orig/jugend",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Jugendbefragung_OGD",
+                target="/code/data/jugend",
+                type="bind",
+            ),
         ],
     )
 
@@ -100,6 +110,11 @@ with DAG(
             Mount(
                 source="/mnt/OGD-DataExch/StatA/Befragungen/Bevoelkerungsbefragung_OGD",
                 target="/code/data/Bevoelkerung",
+                type="bind",
+            ),
+            Mount(
+                source="/mnt/OGD-DataExch/StatA/Befragungen/Jugendbefragung_OGD",
+                target="/code/data/jugend",
                 type="bind",
             ),
         ],

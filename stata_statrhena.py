@@ -15,7 +15,7 @@ from helpers.failure_tracking_operator import FailureTrackingDockerOperator
 # DAG configuration
 DAG_ID = "stata_statrhena"
 FAILURE_THRESHOLD = 16
-EXECUTION_TIMEOUT = timedelta(minutes=2)
+EXECUTION_TIMEOUT = timedelta(minutes=12)
 SCHEDULE = "*/15 * * * *"
 
 default_args = {

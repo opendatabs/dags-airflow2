@@ -21,7 +21,7 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 DAG_ID = "aue_luft_klybeck"
 FAILURE_THRESHOLD = 1
 EXECUTION_TIMEOUT = timedelta(minutes=10)
-SCHEDULE = "0 * * * *"
+SCHEDULE = "*/5 * * * *"
 
 default_args = {
     "owner": "orhan.saeedi",
@@ -63,6 +63,7 @@ with DAG(
         private_environment={
             **COMMON_ENV_VARS,
             "API_KEY_DECENTLAB": Variable.get("API_KEY_DECENTLAB"),
+            "AIRDB_API_KEY": Variable.get("AIRDB_API_KEY"),
             "SHAREPOINT_TENANT_ID": Variable.get("SHAREPOINT_TENANT_ID"),
             "SHAREPOINT_CLIENT_ID": Variable.get("SHAREPOINT_CLIENT_ID"),
             "SHAREPOINT_HOST": Variable.get("SHAREPOINT_HOST"),
