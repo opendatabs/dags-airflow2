@@ -23,8 +23,6 @@ from common_variables import COMMON_ENV_VARS, PATH_TO_CODE
 
 # DAG configuration
 DAG_ID = "stata_superblockbefragungen"
-FAILURE_THRESHOLD = 0
-EXECUTION_TIMEOUT = timedelta(minutes=60)
 SCHEDULE = None
 
 default_args = {
@@ -48,8 +46,6 @@ with DAG(
     dag.doc_md = __doc__
     upload = DockerOperator(
         task_id="upload",
-        failure_threshold=FAILURE_THRESHOLD,
-        execution_timeout=EXECUTION_TIMEOUT,
         image=f"ghcr.io/opendatabs/data-processing/{DAG_ID}:latest",
         force_pull=True,
         api_version="auto",
