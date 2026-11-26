@@ -143,7 +143,7 @@ with DAG(
 
     rsync_markdown = rsync(
         "rsync_markdown",
-        "dcc_grosserat_markdown.json",
+        "dcc_grosserrat_markdown.json",
         "dcc_grosserrat_markdown--rsync",
         [
             Mount(source=PATH_TO_CODE, target="/code", type="bind"),
