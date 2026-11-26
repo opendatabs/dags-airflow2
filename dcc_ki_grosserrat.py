@@ -116,7 +116,7 @@ with DAG(
     "dcc_ki_grosserrat",
     default_args=default_args,
     description="Run the Grosser Rat jobs for the MCP server",
-    schedule=None,
+    schedule="15 1 * * *",
     catchup=False,
 ) as dag:
     dag.doc_md = __doc__
