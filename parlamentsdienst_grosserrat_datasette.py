@@ -49,8 +49,6 @@ with DAG(
             "HTTP_PROXY":  Variable.get("http_proxy"),
             "HTTPS_PROXY": Variable.get("https_proxy"),
             "NO_PROXY":    Variable.get("no_proxy"),
-            "DOCLING_HTTP_CLIENT": Variable.get("DOCLING_HTTP_CLIENT"),
-            "DOCLING_API_KEY": Variable.get("DOCLING_API_KEY"),
             "CURL_CA_BUNDLE": "/etc/ssl/certs/ca-certificates.crt",
             "NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
             "PERL_LWP_SSL_CA_FILE": "/etc/ssl/certs/ca-certificates.crt",
@@ -80,21 +78,6 @@ with DAG(
             Mount(
                 source=f"{PATH_TO_CODE}/data-processing/parlamentsdienst_grosserrat_datasette/data",
                 target="/code/data",
-                type="bind",
-            ),
-            Mount(
-                source=f"/mnt/OGD-DataExch/StatA/Parlament/markdown",
-                target="/code/data/markdown",
-                type="bind",
-            ),
-            Mount(
-                source=f"/mnt/OGD-DataExch/StatA/Parlament/docling",
-                target="/code/data/docling",
-                type="bind",
-            ),
-            Mount(
-                source=f"/mnt/OGD-DataExch/StatA/Parlament/images",
-                target="/code/data/images",
                 type="bind",
             ),
         ],
