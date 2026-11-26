@@ -68,3 +68,27 @@ with DAG(
             ),
         ],
     )
+
+    rsync = DockerOperator(
+        task_id="rsync",
+        image="ghcr.io/opendatabs/rsync:latest",
+        force_pull=True,
+        api_version="auto",
+        auto_remove="force",
+        mount_tmp_dir=False,
+        command="python3 -m rsync.sync_files parlamentsdienst_grosserrat.json",
+        container_name="parlamentsdienst_grosserrat--rsync",
+        docker_url="unix://var/run/docker.sock",
+        network_mode="bridge",
+        tty=True,
+        mounts=[
+            Mount(
+                source="/home/syncuser/.ssh/id_rsa",
+                target="/root/.ssh/id_rsa",
+                type="bind",
+            ),
+            Mount(source="/data/dev/workspace", target="/code", type="bind"),
+        ],
+    )
+
+    upload >> rsync
