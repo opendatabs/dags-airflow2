@@ -59,7 +59,7 @@ SSH_KEY_MOUNT = Mount(
 )
 
 default_args = {
-    "owner": "orhan.saeedi",
+    "owner": "thomas.gerig",
     "depend_on_past": False,
     "start_date": datetime(2026, 11, 26),
     "email": Variable.get("EMAIL_RECEIVERS"),
