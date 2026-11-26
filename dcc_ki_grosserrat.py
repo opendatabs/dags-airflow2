@@ -63,14 +63,14 @@ default_args = {
     "depend_on_past": False,
     "start_date": datetime(2026, 11, 26),
     "email": Variable.get("KI_EMAIL_RECEIVERS"),
-    "email_on_failure": False,
+    "email_on_failure": True,
     "email_on_retry": False,
     "retries": 0,
     "retry_delay": timedelta(minutes=15),
 }
 
 
-def job(task_id, image, environment, mounts, **kwargs):
+def job(task_id, image, environment, mounts):
     return DockerOperator(
         task_id=task_id,
         image=f"ghcr.io/opendatabs/data-processing/{image}:latest",
@@ -85,7 +85,6 @@ def job(task_id, image, environment, mounts, **kwargs):
         network_mode="bridge",
         tty=True,
         mounts=[*CERT_MOUNTS, *mounts],
-        **kwargs,
     )
 
 
@@ -163,7 +162,6 @@ with DAG(
             parlament("markdown", "/code/data_orig/markdown", read_only=True),
             parlament("topics", "/code/data"),
         ],
-        owner="thomas.gerig",
     )
 
     summaries = job(
@@ -185,7 +183,6 @@ with DAG(
                 type="bind",
             ),
         ],
-        owner="thomas.gerig",
     )
 
     mcp = job(
@@ -204,7 +201,6 @@ with DAG(
                 type="bind",
             ),
         ],
-        owner="thomas.gerig",
     )
 
     rsync_mcp = rsync(
