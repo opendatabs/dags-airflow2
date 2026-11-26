@@ -1,5 +1,5 @@
 """
-# dcc_grosserrat_ki.py
+# dcc_ki_grosserrat.py
 The Grosser Rat for the MCP server, in one DAG:
 
 - docling: converts the PDFs of the documents and transcripts into Parlament/markdown, docling and images;
@@ -113,7 +113,7 @@ def parlament(folder, target, read_only=False):
 
 
 with DAG(
-    "dcc_grosserrat_ki",
+    "dcc_ki_grosserrat",
     default_args=default_args,
     description="Run the Grosser Rat jobs for the MCP server",
     schedule=None,
