@@ -62,7 +62,7 @@ default_args = {
     "owner": "thomas.gerig",
     "depend_on_past": False,
     "start_date": datetime(2026, 11, 26),
-    "email": Variable.get("EMAIL_RECEIVERS"),
+    "email": Variable.get("KI_EMAIL_RECEIVERS"),
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 0,
